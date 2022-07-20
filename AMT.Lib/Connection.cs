@@ -77,26 +77,15 @@ namespace AMT.Lib
 
                 }
 
-                // MAC D8:36:5F:5F:4F:94
-
-                // Packet [LEN][..data..][CHK]
-
-
-                // [PK1] [07][94]E[00][00]_O[94][AD]
-                // [PK2] [07][C4][D8] 6__O[94][09]
-
-                // [PK1] [07][94][45][00][00][5F][4F][94][AD]
-                // [PK2] [07][C4][D8][36][5F][5F][4F][94][09]
-
                 bool ack;
                 switch (buffer[0])
                 {
                     case 0x94: // IDENT (len==7)
-                        ack = await processIdentAsync(buffer, len);
+                        ack = processIdent(buffer, len);
                         OnMessage?.Invoke(this, $"Central information Received [{CentralInformation.Connection}] Id: {CentralInformation.AccountId} PartilMac: {CentralInformation.PartialMacAddressString}");
                         break;
                     case 0xC4: // MAC
-                        ack = await processMacAsync(buffer, len);
+                        ack = processMac(buffer, len);
                         OnMessage?.Invoke(this, "Central MAC Received");
                         break;
 
@@ -106,11 +95,11 @@ namespace AMT.Lib
                         break;
 
                     case 0xB0: // Event
-                        ack = await processEventAsync(buffer, len, photo: false);
+                        ack = processEvent(buffer, len, photo: false);
                         OnMessage?.Invoke(this, "Central Event");
                         break;
                     case 0xB5: // Event
-                        ack = await processEventAsync(buffer, len, photo: true);
+                        ack = processEvent(buffer, len, photo: true);
                         OnMessage?.Invoke(this, "Central Photo Event");
                         break;
 
@@ -128,7 +117,7 @@ namespace AMT.Lib
 
         }
 
-        private async Task<bool> processIdentAsync(byte[] buffer, int len)
+        private bool processIdent(byte[] buffer, int len)
         {
             CentralInformation.Connection = (Models.CentralInformation.ConnectionType)buffer[1];
             CentralInformation.AccountId = fromBinary(buffer[2], buffer[3]);
@@ -136,7 +125,7 @@ namespace AMT.Lib
 
             return true;
         }
-        private async Task<bool> processMacAsync(byte[] buffer, int len)
+        private bool processMac(byte[] buffer, int len)
         {
             return true;
         }
@@ -146,7 +135,7 @@ namespace AMT.Lib
             return false;
         }
 
-        private async Task<bool> processEventAsync(byte[] buffer, int len, bool photo)
+        private bool processEvent(byte[] buffer, int len, bool photo)
         {
             if (photo && len != 21)
             {
