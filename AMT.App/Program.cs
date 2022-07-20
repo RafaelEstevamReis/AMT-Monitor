@@ -13,5 +13,12 @@ await cnn.StartAsync();
 void Cnn_OnEvent(object? sender, AMT.Lib.Models.EventInformation e)
 {
     var json = JsonSerializer.Serialize(e);
-    Console.WriteLine(json); 
+    Console.WriteLine(json);
+
+    string qual;
+    if (e.Qualifier == 1) qual = "*";
+    else if (e.Qualifier == 3) qual = "RST";
+    else qual = $"{e.Qualifier}";
+
+    Console.WriteLine($"{DateTime.Now} [{e.Channel}] [{e.MessageType}/{e.ContactId}] Zone: {e.Zone} [{e.Qualifier}]{e.Code} {e.CodeName}");
 }
