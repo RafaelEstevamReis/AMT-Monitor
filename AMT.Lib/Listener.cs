@@ -2,7 +2,7 @@
 
 namespace AMT.Lib
 {
-    public class Connection
+    public class Listener
     {
         private readonly int port;
         private TcpListener listener;
@@ -11,7 +11,7 @@ namespace AMT.Lib
         public event EventHandler<Models.EventInformation> OnEvent;
         public event EventHandler<string> OnMessage;
 
-        public Connection(int port)
+        public Listener(int port)
         {
             this.port = port;
 
@@ -69,7 +69,7 @@ namespace AMT.Lib
                 pktLen++; // Include CheckSum
                 var len = await stream.ReadAsync(buffer, 0, pktLen); // +CHK
 
-                showHex($"{DateTime.Now:T} L{len} ", buffer, len);
+                //showHex($"{DateTime.Now:T} L{len} ", buffer, len);
 
                 if (len == 0) { }
                 if (len != pktLen)
