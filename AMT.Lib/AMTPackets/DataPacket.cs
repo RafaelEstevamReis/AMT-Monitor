@@ -28,16 +28,20 @@
             => BuildPacket((ushort)command, data);
         public static DataPacket BuildPacket(ushort command, byte[] data)
         {
-            var packet = new DataPacket();
-
-            packet.Header = new byte[8];
             int dLen = (data?.Length ?? 0) + 2;
-            packet.Header[4] = (byte)(dLen >> 8);
-            packet.Header[5] = (byte)dLen;
-            packet.Header[6] = (byte)(command >> 8);
-            packet.Header[7] = (byte)command;
+            var packet = new DataPacket
+            {
+                Header = new byte[8]
+                {
+                    0, 0, 0, 0,
+                    (byte)(dLen >> 8),    // [4]
+                    (byte)(dLen & 0xFF),  // [5]
+                    (byte)(command >> 8), // [6]
+                    (byte)(command & 0xFF)// [7]
+                },
+                Data = new byte[data?.Length ?? 0]
+            };
 
-            packet.Data = new byte[data?.Length ?? 0];
             if (packet.Data.Length > 0)
             {
                 Array.Copy(data, 0, packet.Data, 0, data.Length);
