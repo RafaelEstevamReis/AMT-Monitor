@@ -8,6 +8,8 @@
             CONNECT_PASSWORD = 0xF0F0,
             CENTRAL_STATUS = 0x0B4A,
             SENSOR_CONFIGURATION = 0x3660,
+            EVENT_POINTER = 0x3003,
+            EVENT_LOG = 0x3900,
         }
 
         public byte[] Header { get; set; }
@@ -72,7 +74,13 @@
         }
         protected static byte hexToDec(byte hex)
         {
-            return (byte)((hex >> 4) * 10 + (hex & 0x0F));
+            var h = hex >> 4;
+            var l = hex & 0x0F;
+
+            if (h == 0x0a) h = 0;
+            if (l == 0x0a) l = 0;
+
+            return (byte)(h * 10 + l);
         }
 
     }
