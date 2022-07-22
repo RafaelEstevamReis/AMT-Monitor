@@ -7,8 +7,8 @@ namespace AMT.Lib
         private readonly int port;
         private TcpListener listener;
 
-        public Models.CentralInformation CentralInformation { get; init; }
-        public event EventHandler<Models.EventInformation> OnEvent;
+        public ListenerModels.CentralInformation CentralInformation { get; init; }
+        public event EventHandler<ListenerModels.EventInformation> OnEvent;
         public event EventHandler<string> OnMessage;
 
         public Listener(int port)
@@ -69,7 +69,7 @@ namespace AMT.Lib
                 pktLen++; // Include CheckSum
                 var len = await stream.ReadAsync(buffer, 0, pktLen); // +CHK
 
-                //showHex($"{DateTime.Now:T} L{len} ", buffer, len);
+                showHex($"{DateTime.Now:T} L{len} ", buffer, len);
 
                 if (len == 0) { }
                 if (len != pktLen)
@@ -119,7 +119,7 @@ namespace AMT.Lib
 
         private bool processIdent(byte[] buffer, int len)
         {
-            CentralInformation.Connection = (Models.CentralInformation.ConnectionType)buffer[1];
+            CentralInformation.Connection = (ListenerModels.CentralInformation.ConnectionType)buffer[1];
             CentralInformation.AccountId = fromBinary(buffer[2], buffer[3]);
             CentralInformation.PartialMacAddress = new byte[] { buffer[4], buffer[5], buffer[6] };
 
@@ -144,9 +144,9 @@ namespace AMT.Lib
             {
             }
 
-            var eventInfo = new Models.EventInformation
+            var eventInfo = new ListenerModels.EventInformation
             {
-                Channel = (Models.EventInformation.ChannelType)buffer[1],
+                Channel = (ListenerModels.EventInformation.ChannelType)buffer[1],
                 ContactId = decode(buffer[2], buffer[3], buffer[4], buffer[5]),
                 MessageType = decode(buffer[6], buffer[7]), // 18: ContactId
                 Qualifier = buffer[8],

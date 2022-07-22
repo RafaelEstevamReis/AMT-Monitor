@@ -1,4 +1,4 @@
-﻿namespace AMT.Lib.Models
+﻿namespace AMT.Lib.ListenerModels
 {
     public class EventInformation
     {
