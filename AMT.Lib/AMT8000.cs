@@ -32,16 +32,13 @@ namespace AMT.Lib
             var authResult = await sendReceiveAsync<Connection>(stream, auth);
             if (authResult.Data[0] != 0) throw new InvalidOperationException("Auth Error");
 
+            List<EventLog.Event> events = new List<EventLog.Event>();
             var pointerResult = await sendReceiveAsync<EventPointer>(stream, EventPointer.Request());
-            pointerResult = pointerResult;
-
             for (int i = 0; i < 32; i++)
             {
                 var logResult = await sendReceiveAsync<EventLog>(stream, EventLog.Request(i, pointerResult.Index));
-                logResult = logResult;
+                events.AddRange(logResult.Events);
             }
-
-
 
             var sensorResult = await sendReceiveAsync<SensorConfiguration>(stream, SensorConfiguration.Request());
             sensorResult = sensorResult;
