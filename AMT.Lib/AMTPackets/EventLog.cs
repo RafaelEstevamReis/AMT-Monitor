@@ -40,13 +40,18 @@ namespace AMT.Lib.AMTPackets
                 Events[i] = new Event();
 
                 Events[i].EventId = (ushort)(Data[offset++] * 256 + Data[offset++]);
-                Events[i].DateTime = new DateTime(
-                    year: hexToDec(Data[offset++]) + 2000,
-                    month: hexToDec(Data[offset++]),
-                    day: hexToDec(Data[offset++]),
-                    hour: hexToDec(Data[offset++]),
-                    minute: hexToDec(Data[offset++]),
-                    second: hexToDec(Data[offset++]));
+
+                int year = hexToDec(Data[offset++]) + 2000;
+                int month = hexToDec(Data[offset++]);
+                int day = hexToDec(Data[offset++]);
+                int hour = hexToDec(Data[offset++]);
+                int minute = hexToDec(Data[offset++]);
+                int second = hexToDec(Data[offset++]);
+
+                if (month > 0)
+                {
+                    Events[i].DateTime = new DateTime(year, month, day, hour, minute, second);
+                }
 
                 Events[i].EventType = (ushort)(hexToDec(Data[offset++]) * 100 + hexToDec(Data[offset++]));
 
