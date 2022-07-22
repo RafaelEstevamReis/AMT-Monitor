@@ -32,9 +32,19 @@ namespace AMT.Lib
             var authResult = await sendReceiveAsync<Connection>(stream, auth);
             if (authResult.Data[0] != 0) throw new InvalidOperationException("Auth Error");
 
+            var pointerResult = await sendReceiveAsync<EventPointer>(stream, EventPointer.Request());
+            pointerResult = pointerResult;
+
+            for (int i = 0; i < 32; i++)
+            {
+                var logResult = await sendReceiveAsync<EventLog>(stream, EventLog.Request(i, pointerResult.Index));
+                logResult = logResult;
+            }
+
+
+
             var sensorResult = await sendReceiveAsync<SensorConfiguration>(stream, SensorConfiguration.Request());
             sensorResult = sensorResult;
-
 
             var statusResult = await sendReceiveAsync<CentralStatus>(stream, CentralStatus.Request());
             statusResult = statusResult;
@@ -80,7 +90,11 @@ namespace AMT.Lib
             if (dataLen != dataExpenctedLen) { }
 
             byte[] packet = new byte[totalLen];
-            Buffer.BlockCopy(bytes, 0, packet, 0, totalLen);
+            try
+            {
+                Buffer.BlockCopy(bytes, 0, packet, 0, totalLen);
+            }
+            catch(Exception ex) { }
             return packet;
         }
 
