@@ -10,7 +10,7 @@ cnn.OnMessage += (s, m) => Console.WriteLine($"{DateTime.Now} {m}");
 await cnn.StartAsync();
 
 
-void Cnn_OnEvent(object? sender, AMT.Lib.Models.EventInformation e)
+void Cnn_OnEvent(object? sender, AMT.Lib.ListenerModels.EventInformation e)
 {
     var json = JsonSerializer.Serialize(e);
     Console.WriteLine(json);
