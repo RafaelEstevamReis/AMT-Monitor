@@ -25,22 +25,28 @@ namespace AMT.Lib
             if (!tcpClient.Connected) throw new InvalidOperationException("Not connected");
             var stream = tcpClient.GetStream();
 
-            var auth = DataPacket.BuildAuthenticationPacket(ConnectionInfo.GetPassword());
+            var auth = Connection.Request(ConnectionInfo.GetPassword());
             //await sendPacketAsync(stream, auth);
             //var response = await receiveBytesAsync(stream);
             //var result = DataPacket.Unpack(response);
-            var authResult = await sendReceiveAsync(stream, auth);
+            var authResult = await sendReceiveAsync<Connection>(stream, auth);
             if (authResult.Data[0] != 0) throw new InvalidOperationException("Auth Error");
 
-            var statusResult = await sendReceiveAsync(stream, DataPacket.BuildCentralStatus());
+            var sensorResult = await sendReceiveAsync<SensorConfiguration>(stream, SensorConfiguration.Request());
+            sensorResult = sensorResult;
+
+
+            var statusResult = await sendReceiveAsync<CentralStatus>(stream, CentralStatus.Request());
             statusResult = statusResult;
         }
 
-        private static async Task<DataPacket> sendReceiveAsync(NetworkStream stream, DataPacket toSend)
+        private static async Task<T> sendReceiveAsync<T>(NetworkStream stream, DataPacket toSend)
+            where T : DataPacket
         {
             await sendPacketAsync(stream, toSend);
             var bytesReceived = await receiveBytesAsync(stream);
-            var receivedPacket = DataPacket.Unpack(bytesReceived);
+            var receivedPacket = Activator.CreateInstance<T>();
+            receivedPacket.Unpack(bytesReceived);
 
             if (receivedPacket.Header[6] != toSend.Header[6]
                 || receivedPacket.Header[7] != toSend.Header[7])
@@ -58,7 +64,7 @@ namespace AMT.Lib
         public static async Task<byte[]> receiveBytesAsync(NetworkStream stream)
         {
             byte[] bytes = new byte[512];
-            
+
             // read 8 (header)
             int hdrLen = await stream.ReadAsync(bytes, 0, 8);
             // unpack len
@@ -69,6 +75,9 @@ namespace AMT.Lib
             int totalLen = 8 + dataLen;
             // read checksum
             int bCheck = stream.ReadByte();
+
+            if (hdrLen != 8) { }
+            if (dataLen != dataExpenctedLen) { }
 
             byte[] packet = new byte[totalLen];
             Buffer.BlockCopy(bytes, 0, packet, 0, totalLen);
