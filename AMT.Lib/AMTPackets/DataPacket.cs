@@ -7,6 +7,7 @@
         {
             CONNECT_PASSWORD = 0xF0F0,
             CENTRAL_STATUS = 0x0B4A,
+            SENSOR_CONFIGURATION = 0x3660,
         }
 
         public byte[] Header { get; set; }
@@ -49,36 +50,30 @@
 
             return packet;
         }
-        public static DataPacket Unpack(byte[] data)
-        {
-            var packet = new DataPacket();
-            packet.Header = new byte[8];
-            Array.Copy(data, 0, packet.Header, 0, packet.Header.Length);
 
-            int dataLen = packet.Header[4] * 256 + packet.Header[5] - 2;
-            packet.Data = new byte[dataLen];
+        public virtual void Unpack(byte[] receivedBytes)
+        {
+            Header = new byte[8];
+            Array.Copy(receivedBytes, 0, Header, 0, Header.Length);
+
+            int dataLen = Header[4] * 256 + Header[5] - 2;
+            Data = new byte[dataLen];
             if (dataLen > 0)
             {
-                Array.Copy(data, 8, packet.Data, 0, dataLen);
+                Array.Copy(receivedBytes, 8, Data, 0, dataLen);
             }
-            return packet;
+
         }
 
-        public static DataPacket BuildAuthenticationPacket(byte[] password)
+        protected static bool IsBit(byte value, byte index)
         {
-            var data = new byte[9];
-            Buffer.BlockCopy(password, 0, data, 1, password.Length);
-            // captured a header and a trailer
-            data[0] = 1;
-            data[7] = 0x10; 
-
-            return BuildPacket(Commands.CONNECT_PASSWORD, data);
+            int mask = 1 << index;
+            return (value & mask) != 0;
         }
-        public static DataPacket BuildCentralStatus()
+        protected static byte hexToDec(byte hex)
         {
-            return BuildPacket(Commands.CENTRAL_STATUS, null);
+            return (byte)((hex >> 4) * 10 + (hex & 0x0F));
         }
-
 
     }
 }
