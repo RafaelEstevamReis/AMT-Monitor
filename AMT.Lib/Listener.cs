@@ -1,4 +1,7 @@
-﻿using System.Net.Sockets;
+﻿using System;
+using System.Linq;
+using System.Net.Sockets;
+using System.Threading.Tasks;
 
 namespace AMT.Lib
 {
@@ -7,7 +10,7 @@ namespace AMT.Lib
         private readonly int port;
         private TcpListener listener;
 
-        public ListenerModels.CentralInformation CentralInformation { get; init; }
+        public ListenerModels.CentralInformation CentralInformation { get; private set; }
         public event EventHandler<ListenerModels.EventInformation> OnEvent;
         public event EventHandler<ListenerModels.MessageEventArgs> OnMessage;
 

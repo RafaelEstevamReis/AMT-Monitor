@@ -1,4 +1,6 @@
-﻿namespace AMT.Lib.ListenerModels
+﻿using System;
+
+namespace AMT.Lib.ListenerModels
 {
     public class MessageEventArgs : EventArgs
     {

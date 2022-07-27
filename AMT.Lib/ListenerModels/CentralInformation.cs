@@ -1,4 +1,6 @@
-﻿namespace AMT.Lib.ListenerModels
+﻿using System.Linq;
+
+namespace AMT.Lib.ListenerModels
 {
     public class CentralInformation
     {

@@ -1,4 +1,6 @@
-﻿namespace AMT.Lib.AMTPackets
+﻿using System;
+
+namespace AMT.Lib.AMTPackets
 {
     public class Connection : DataPacket
     {

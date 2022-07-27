@@ -1,4 +1,6 @@
-﻿namespace AMT.Lib.AMTModels
+﻿using System;
+
+namespace AMT.Lib.AMTModels
 {
     public class ConnectionInfo
     {

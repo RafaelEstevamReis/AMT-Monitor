@@ -1,6 +1,8 @@
 ﻿using AMT.Lib.AMTModels;
 using AMT.Lib.AMTPackets;
+using System;
 using System.Net.Sockets;
+using System.Threading.Tasks;
 
 namespace AMT.Lib
 {
@@ -19,8 +21,6 @@ namespace AMT.Lib
 
         public async Task<bool> ConnectAsync()
         {
-            byte[] bytes;
-
             await tcpClient.ConnectAsync(ConnectionInfo.IP, ConnectionInfo.Port);
             if (!tcpClient.Connected) throw new InvalidOperationException("Not connected");
             var stream = tcpClient.GetStream();
