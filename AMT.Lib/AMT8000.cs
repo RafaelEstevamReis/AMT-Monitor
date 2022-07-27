@@ -1,6 +1,7 @@
 ﻿using AMT.Lib.AMTModels;
 using AMT.Lib.AMTPackets;
 using System;
+using System.Collections.Generic;
 using System.Net.Sockets;
 using System.Threading.Tasks;
 
@@ -45,6 +46,29 @@ namespace AMT.Lib
             //var sensorResult = await sendReceiveAsync<SensorConfiguration>(stream, SensorConfiguration.Request());
             //sensorResult = sensorResult;
 
+        }
+
+        public async Task<CentralStatus> GetCentralStatusAsync()
+        {
+            var stream = tcpClient.GetStream();
+            return await sendReceiveAsync<CentralStatus>(stream, CentralStatus.Request());
+        }
+        public async Task<EventLog.Event[]> GetEventsAsync()
+        {
+            var stream = tcpClient.GetStream();
+            var events = new List<EventLog.Event>();
+            var pointerResult = await sendReceiveAsync<EventPointer>(stream, EventPointer.Request());
+            for (int i = 0; i < 32; i++)
+            {
+                var logResult = await sendReceiveAsync<EventLog>(stream, EventLog.Request(i, pointerResult.Index));
+                events.AddRange(logResult.Events);
+            }
+            return events.ToArray();
+        }
+        public async Task<SensorConfiguration> GetSensorConfigurationAsync()
+        {
+            var stream = tcpClient.GetStream();
+            return await sendReceiveAsync<SensorConfiguration>(stream, SensorConfiguration.Request());
         }
 
 
@@ -92,7 +116,7 @@ namespace AMT.Lib
             {
                 Buffer.BlockCopy(bytes, 0, packet, 0, totalLen);
             }
-            catch(Exception ex) { }
+            catch { }
             return packet;
         }
 
