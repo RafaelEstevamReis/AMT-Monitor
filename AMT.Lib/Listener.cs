@@ -9,7 +9,7 @@ namespace AMT.Lib
 
         public ListenerModels.CentralInformation CentralInformation { get; init; }
         public event EventHandler<ListenerModels.EventInformation> OnEvent;
-        public event EventHandler<string> OnMessage;
+        public event EventHandler<ListenerModels.MessageEventArgs> OnMessage;
 
         public Listener(int port)
         {
@@ -82,30 +82,54 @@ namespace AMT.Lib
                 {
                     case 0x94: // IDENT (len==7)
                         ack = processIdent(buffer, len);
-                        OnMessage?.Invoke(this, $"Central information Received [{CentralInformation.Connection}] Id: {CentralInformation.AccountId} PartilMac: {CentralInformation.PartialMacAddressString}");
+                        OnMessage?.Invoke(this, new ListenerModels.MessageEventArgs()
+                        {
+                            Message = $"Central information Received [{CentralInformation.Connection}] Id: {CentralInformation.AccountId} PartilMac: {CentralInformation.PartialMacAddressString}",
+                            Type = ListenerModels.MessageEventArgs.MessageType.CentralInformation
+                        });
                         break;
                     case 0xC4: // MAC
                         ack = processMac(buffer, len);
-                        OnMessage?.Invoke(this, "Central MAC Received");
+                        OnMessage?.Invoke(this, new ListenerModels.MessageEventArgs()
+                        {
+                            Message = "Central MAC Received",
+                            Type = ListenerModels.MessageEventArgs.MessageType.MacReceived
+                        });
                         break;
 
                     case 0x80: // Date/Time
                         ack = await processDateTimeAsync(stream, buffer, len);
-                        OnMessage?.Invoke(this, "Central asked current Date/Time");
+                        OnMessage?.Invoke(this, new ListenerModels.MessageEventArgs()
+                        {
+                            Message = "Central asked current Date/Time",
+                            Type = ListenerModels.MessageEventArgs.MessageType.DateTimeRequest,
+                        });
                         break;
 
                     case 0xB0: // Event
                         ack = processEvent(buffer, len, photo: false);
-                        OnMessage?.Invoke(this, "Central Event");
+                        OnMessage?.Invoke(this, new ListenerModels.MessageEventArgs()
+                        {
+                            Message = "Central Event",
+                            Type = ListenerModels.MessageEventArgs.MessageType.Event
+                        });
                         break;
                     case 0xB5: // Event
                         ack = processEvent(buffer, len, photo: true);
-                        OnMessage?.Invoke(this, "Central Photo Event");
+                        OnMessage?.Invoke(this, new ListenerModels.MessageEventArgs()
+                        {
+                            Message = "Central Photo Event",
+                            Type = ListenerModels.MessageEventArgs.MessageType.EventWithPhoto
+                        });
                         break;
 
                     default:
                         showHex($"{DateTime.Now:T} [UNKOW] L{len} ", buffer, len);
-                        OnMessage?.Invoke(this, "UNKOWN MESSAGE " + buffer[0]);
+                        OnMessage?.Invoke(this, new ListenerModels.MessageEventArgs()
+                        {
+                            Message = "UNKOWN MESSAGE " + buffer[0],
+                            Type = ListenerModels.MessageEventArgs.MessageType.UNKOWN
+                        });
                         ack = true;
                         break;
                 }
