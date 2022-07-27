@@ -1,13 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace AMT.Lib.AMTPackets
+﻿namespace AMT.Lib.AMTPackets
 {
     public class CentralStatus : DataPacket
     {
+        public enum StatusType
+        {
+            Disarmed = 0,
+            Armed = 2
+        }
+
+
         public string Firmware { get; set; }
         public bool IsEth { get; set; }
         public bool IsWifi { get; set; }
@@ -67,7 +68,7 @@ namespace AMT.Lib.AMTPackets
             if (IsBit(Data[20], 6)) Status = 2;
             else
             {
-                Status = IsBit(Data[20],5) ? 1 : 0;
+                Status = IsBit(Data[20], 5) ? 1 : 0;
             }
             // [4] Bypassed
             AnyZoneByPassed = IsBit(Data[20], 4);
