@@ -17,7 +17,7 @@ namespace AMT.Lib
             tcpClient = new TcpClient();
         }
 
-        public async Task ConnectAsync()
+        public async Task<bool> ConnectAsync()
         {
             byte[] bytes;
 
@@ -26,26 +26,27 @@ namespace AMT.Lib
             var stream = tcpClient.GetStream();
 
             var auth = Connection.Request(ConnectionInfo.GetPassword());
-            //await sendPacketAsync(stream, auth);
-            //var response = await receiveBytesAsync(stream);
-            //var result = DataPacket.Unpack(response);
             var authResult = await sendReceiveAsync<Connection>(stream, auth);
-            if (authResult.Data[0] != 0) throw new InvalidOperationException("Auth Error");
+            if (!authResult.Success) return false;
 
-            List<EventLog.Event> events = new List<EventLog.Event>();
-            var pointerResult = await sendReceiveAsync<EventPointer>(stream, EventPointer.Request());
-            for (int i = 0; i < 32; i++)
-            {
-                var logResult = await sendReceiveAsync<EventLog>(stream, EventLog.Request(i, pointerResult.Index));
-                events.AddRange(logResult.Events);
-            }
+            return true;
 
-            var sensorResult = await sendReceiveAsync<SensorConfiguration>(stream, SensorConfiguration.Request());
-            sensorResult = sensorResult;
+            //var statusResult = await sendReceiveAsync<CentralStatus>(stream, CentralStatus.Request());
+            //statusResult = statusResult;
 
-            var statusResult = await sendReceiveAsync<CentralStatus>(stream, CentralStatus.Request());
-            statusResult = statusResult;
+            //List<EventLog.Event> events = new List<EventLog.Event>();
+            //var pointerResult = await sendReceiveAsync<EventPointer>(stream, EventPointer.Request());
+            //for (int i = 0; i < 32; i++)
+            //{
+            //    var logResult = await sendReceiveAsync<EventLog>(stream, EventLog.Request(i, pointerResult.Index));
+            //    events.AddRange(logResult.Events);
+            //}
+
+            //var sensorResult = await sendReceiveAsync<SensorConfiguration>(stream, SensorConfiguration.Request());
+            //sensorResult = sensorResult;
+
         }
+
 
         private static async Task<T> sendReceiveAsync<T>(NetworkStream stream, DataPacket toSend)
             where T : DataPacket
