@@ -43,9 +43,6 @@ namespace Simple.AMT
             using var stream = client.GetStream();
             byte[] buffer = new byte[512];
 
-            // request MAC
-            stream.Write(new byte[] { 0x01, 0xc4, 0x3a });
-
             while (true)
             {
                 if (client.Available < 2)
@@ -93,6 +90,13 @@ namespace Simple.AMT
                             Message = $"Central information Received [{CentralInformation.Connection}] Id: {CentralInformation.AccountId} PartilMac: {CentralInformation.PartialMacAddressString}",
                             Type = ListenerModels.MessageEventArgs.MessageType.CentralInformation
                         });
+
+                        if (CentralInformation.MacAddress == null)
+                        {
+                            // request MAC
+                            stream.Write(new byte[] { 0x01, 0xc4, 0x3a });
+                        }
+
                         break;
                     case 0xC4: // MAC
                         ack = processMac(buffer, len);
@@ -161,7 +165,7 @@ namespace Simple.AMT
             Buffer.BlockCopy(buffer, 1, CentralInformation.MacAddress, 0, 6);
             return true;
         }
-        private async Task<bool> processDateTimeAsync(NetworkStream stream, byte[] buffer, int len)
+        private static async Task<bool> processDateTimeAsync(NetworkStream stream, byte[] buffer, int len)
         {
             await sendDateTime_TZBR(stream);
             return false;
@@ -198,12 +202,11 @@ namespace Simple.AMT
             return true;
         }
 
-
-        private async Task sendAckAsync(NetworkStream stream)
+        private static async Task sendAckAsync(NetworkStream stream)
         {
             await stream.WriteAsync(new byte[] { 0xfe });
         }
-        private async Task sendDateTime_TZBR(NetworkStream stream)
+        private static async Task sendDateTime_TZBR(NetworkStream stream)
         {
             DateTime now = DateTime.UtcNow.AddHours(-3);
 
