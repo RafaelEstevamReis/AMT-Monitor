@@ -9,7 +9,6 @@ namespace Simple.AMT
 {
     public class AMT8000
     {
-
         public ConnectionInfo ConnectionInfo { get; }
 
         private readonly TcpClient tcpClient;
@@ -31,21 +30,6 @@ namespace Simple.AMT
             if (!authResult.Success) return false;
 
             return true;
-
-            //var statusResult = await sendReceiveAsync<CentralStatus>(stream, CentralStatus.Request());
-            //statusResult = statusResult;
-
-            //List<EventLog.Event> events = new List<EventLog.Event>();
-            //var pointerResult = await sendReceiveAsync<EventPointer>(stream, EventPointer.Request());
-            //for (int i = 0; i < 32; i++)
-            //{
-            //    var logResult = await sendReceiveAsync<EventLog>(stream, EventLog.Request(i, pointerResult.Index));
-            //    events.AddRange(logResult.Events);
-            //}
-
-            //var sensorResult = await sendReceiveAsync<SensorConfiguration>(stream, SensorConfiguration.Request());
-            //sensorResult = sensorResult;
-
         }
 
         public async Task<CentralStatus> GetCentralStatusAsync()
@@ -70,7 +54,6 @@ namespace Simple.AMT
             var stream = tcpClient.GetStream();
             return await sendReceiveAsync<SensorConfiguration>(stream, SensorConfiguration.Request());
         }
-
 
         private static async Task<T> sendReceiveAsync<T>(NetworkStream stream, DataPacket toSend)
             where T : DataPacket
