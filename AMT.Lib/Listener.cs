@@ -185,10 +185,10 @@ namespace Simple.AMT
                     break;
 
                 default:
-                    if (Debug_PrintHex) showHex($"{DateTime.Now:T} [UNKOW] L{len} ", buffer, len);
+                    if (Debug_PrintHex) showHex($"{DateTime.Now:T} [UNKOW] L{len}P{pktLen} ", buffer, len);
                     OnMessage?.Invoke(this, new ListenerModels.MessageEventArgs()
                     {
-                        Message = $"UNKOWN MESSAGE {buffer[0]} L{len} {buildHexString(buffer, len)}",
+                        Message = $"UNKOWN MESSAGE {buffer[0]} L{len}P{pktLen} {buildHexString(buffer, len)}",
                         Type = ListenerModels.MessageEventArgs.MessageType.UNKOWN
                     });
                     ack = true;
