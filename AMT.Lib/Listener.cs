@@ -35,15 +35,15 @@ namespace Simple.AMT
                     continue;
                 }
                 var client = await listener.AcceptTcpClientAsync();
-                _ = processaClientAsync(client);
+                _ = processClientAsync(client);
             }
         }
 
-        private async Task processaClientAsync(TcpClient client)
+        private async Task processClientAsync(TcpClient client)
         {
             try
             {
-                await _processaClientAsync(client);
+                await _processClientAsync(client);
             }
             catch (Exception ex)
             {
@@ -58,7 +58,7 @@ namespace Simple.AMT
                 }
             }
         }
-        private async Task _processaClientAsync(TcpClient client)
+        private async Task _processClientAsync(TcpClient client)
         {
             using var stream = client.GetStream();
             byte[] buffer = new byte[512];
@@ -77,103 +77,112 @@ namespace Simple.AMT
                 }
                 lastReceive = DateTime.Now;
 
-                // read len
-                var pktLen = stream.ReadByte();
-                await Task.Delay(50);
-
-
-                if (pktLen == 0)
+                try
                 {
-                    /* ?? */
-                    continue;
+                    await receivePacketAsync(stream, buffer);
                 }
-                if (pktLen == 0xf7)
+                catch (Exception ex)
                 {
-                    /* ?? */
-                    // heart beat
-                    await sendAckAsync(stream);
+                    OnClientException?.Invoke(this, ex);
                 }
-                if (pktLen > 127) { /* ?? */ }
+            }
+        }
+        private async Task receivePacketAsync(NetworkStream stream, byte[] buffer)
+        {
+            // read len
+            var pktLen = stream.ReadByte();
+            await Task.Delay(50);
 
-                pktLen++; // Include CheckSum
-                var len = await stream.ReadAsync(buffer, 0, pktLen); // +CHK
+            if (pktLen == 0)
+            {
+                /* ?? */
+                return;
+            }
+            if (pktLen == 0xf7)
+            {
+                /* ?? */
+                // heart beat
+                await sendAckAsync(stream);
+            }
+            if (pktLen > 127) { /* ?? */ }
 
-                //showHex($"{DateTime.Now:T} L{len} ", buffer, len);
+            pktLen++; // Include CheckSum
+            var len = await stream.ReadAsync(buffer, 0, pktLen); // +CHK
 
-                if (len == 0) { }
-                if (len != pktLen)
-                {
+            //showHex($"{DateTime.Now:T} L{len} ", buffer, len);
 
-                }
+            if (len == 0) { }
+            if (len != pktLen)
+            {
 
-                bool ack;
-                switch (buffer[0])
-                {
-                    case 0x94: // IDENT (len==7)
-                        ack = processIdent(buffer, len);
-                        OnMessage?.Invoke(this, new ListenerModels.MessageEventArgs()
-                        {
-                            Message = $"Central information Received [{CentralInformation.Connection}] Id: {CentralInformation.AccountId} PartilMac: {CentralInformation.PartialMacAddressString}",
-                            Type = ListenerModels.MessageEventArgs.MessageType.CentralInformation
-                        });
-
-                        if (CentralInformation.MacAddress == null)
-                        {
-                            // request MAC
-                            stream.Write(new byte[] { 0x01, 0xc4, 0x3a });
-                        }
-
-                        break;
-                    case 0xC4: // MAC
-                        ack = processMac(buffer, len);
-                        OnMessage?.Invoke(this, new ListenerModels.MessageEventArgs()
-                        {
-                            Message = "Central MAC Received",
-                            Type = ListenerModels.MessageEventArgs.MessageType.MacReceived
-                        });
-                        break;
-
-                    case 0x80: // Date/Time
-                        ack = await processDateTimeAsync(stream, buffer, len);
-                        OnMessage?.Invoke(this, new ListenerModels.MessageEventArgs()
-                        {
-                            Message = "Central asked current Date/Time",
-                            Type = ListenerModels.MessageEventArgs.MessageType.DateTimeRequest,
-                        });
-                        break;
-
-                    case 0xB0: // Event
-                        ack = processEvent(buffer, len, photo: false);
-                        OnMessage?.Invoke(this, new ListenerModels.MessageEventArgs()
-                        {
-                            Message = "Central Event",
-                            Type = ListenerModels.MessageEventArgs.MessageType.Event
-                        });
-                        break;
-                    case 0xB5: // Event
-                        ack = processEvent(buffer, len, photo: true);
-                        OnMessage?.Invoke(this, new ListenerModels.MessageEventArgs()
-                        {
-                            Message = "Central Photo Event",
-                            Type = ListenerModels.MessageEventArgs.MessageType.EventWithPhoto
-                        });
-                        break;
-
-                    default:
-                        showHex($"{DateTime.Now:T} [UNKOW] L{len} ", buffer, len);
-                        OnMessage?.Invoke(this, new ListenerModels.MessageEventArgs()
-                        {
-                            Message = "UNKOWN MESSAGE " + buffer[0],
-                            Type = ListenerModels.MessageEventArgs.MessageType.UNKOWN
-                        });
-                        ack = true;
-                        break;
-                }
-
-                // send ACK
-                if (ack) await sendAckAsync(stream);
             }
 
+            bool ack;
+            switch (buffer[0])
+            {
+                case 0x94: // IDENT (len==7)
+                    ack = processIdent(buffer, len);
+                    OnMessage?.Invoke(this, new ListenerModels.MessageEventArgs()
+                    {
+                        Message = $"Central information Received [{CentralInformation.Connection}] Id: {CentralInformation.AccountId} PartilMac: {CentralInformation.PartialMacAddressString}",
+                        Type = ListenerModels.MessageEventArgs.MessageType.CentralInformation
+                    });
+
+                    if (CentralInformation.MacAddress == null)
+                    {
+                        // request MAC
+                        stream.Write(new byte[] { 0x01, 0xc4, 0x3a });
+                    }
+
+                    break;
+                case 0xC4: // MAC
+                    ack = processMac(buffer, len);
+                    OnMessage?.Invoke(this, new ListenerModels.MessageEventArgs()
+                    {
+                        Message = "Central MAC Received",
+                        Type = ListenerModels.MessageEventArgs.MessageType.MacReceived
+                    });
+                    break;
+
+                case 0x80: // Date/Time
+                    ack = await processDateTimeAsync(stream, buffer, len);
+                    OnMessage?.Invoke(this, new ListenerModels.MessageEventArgs()
+                    {
+                        Message = "Central asked current Date/Time",
+                        Type = ListenerModels.MessageEventArgs.MessageType.DateTimeRequest,
+                    });
+                    break;
+
+                case 0xB0: // Event
+                    ack = processEvent(buffer, len, photo: false);
+                    OnMessage?.Invoke(this, new ListenerModels.MessageEventArgs()
+                    {
+                        Message = "Central Event",
+                        Type = ListenerModels.MessageEventArgs.MessageType.Event
+                    });
+                    break;
+                case 0xB5: // Event
+                    ack = processEvent(buffer, len, photo: true);
+                    OnMessage?.Invoke(this, new ListenerModels.MessageEventArgs()
+                    {
+                        Message = "Central Photo Event",
+                        Type = ListenerModels.MessageEventArgs.MessageType.EventWithPhoto
+                    });
+                    break;
+
+                default:
+                    showHex($"{DateTime.Now:T} [UNKOW] L{len} ", buffer, len);
+                    OnMessage?.Invoke(this, new ListenerModels.MessageEventArgs()
+                    {
+                        Message = "UNKOWN MESSAGE " + buffer[0],
+                        Type = ListenerModels.MessageEventArgs.MessageType.UNKOWN
+                    });
+                    ack = true;
+                    break;
+            }
+
+            // send ACK
+            if (ack) await sendAckAsync(stream);
 
         }
 
