@@ -1,11 +1,11 @@
-﻿using AMT.Lib.AMTModels;
-using AMT.Lib.AMTPackets;
+﻿using Simple.AMT.AMTModels;
+using Simple.AMT.AMTPackets;
 using System;
 using System.Collections.Generic;
 using System.Net.Sockets;
 using System.Threading.Tasks;
 
-namespace AMT.Lib
+namespace Simple.AMT
 {
     public class AMT8000
     {

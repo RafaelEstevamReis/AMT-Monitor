@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace AMT.Lib.AMTPackets
+namespace Simple.AMT.AMTPackets
 {
     public class Connection : DataPacket
     {

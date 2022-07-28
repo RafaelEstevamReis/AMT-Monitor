@@ -1,4 +1,4 @@
-﻿namespace AMT.Lib.Helpers
+﻿namespace Simple.AMT.Helpers
 {
     public class ErrorCorrection
     {

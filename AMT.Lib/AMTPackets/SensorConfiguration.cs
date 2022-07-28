@@ -1,4 +1,4 @@
-﻿namespace AMT.Lib.AMTPackets
+﻿namespace Simple.AMT.AMTPackets
 {
     public class SensorConfiguration : DataPacket
     {

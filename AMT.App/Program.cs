@@ -1,9 +1,9 @@
-﻿using AMT.Lib;
+﻿using Simple.AMT;
 using System.Text.Json;
 
 Console.WriteLine("START");
 
-AMT8000 amt = new AMT8000(new AMT.Lib.AMTModels.ConnectionInfo()
+AMT8000 amt = new AMT8000(new Simple.AMT.AMTModels.ConnectionInfo()
 {
     IP = "192.168.1.0",
     Port = 9876,
@@ -24,7 +24,7 @@ cnn.OnMessage += (s, m) => Console.WriteLine($"{DateTime.Now} {m}");
 await cnn.StartAsync();
 
 
-void Cnn_OnEvent(object? sender, AMT.Lib.ListenerModels.EventInformation e)
+void Cnn_OnEvent(object? sender, Simple.AMT.ListenerModels.EventInformation e)
 {
     var json = JsonSerializer.Serialize(e);
     Console.WriteLine(json);

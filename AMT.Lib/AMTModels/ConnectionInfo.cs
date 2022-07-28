@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace AMT.Lib.AMTModels
+namespace Simple.AMT.AMTModels
 {
     public class ConnectionInfo
     {

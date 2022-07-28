@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 
-namespace AMT.Lib.ListenerModels
+namespace Simple.AMT.ListenerModels
 {
     public class CentralInformation
     {

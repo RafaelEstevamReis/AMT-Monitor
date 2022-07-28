@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AMT.Lib.AMTPackets
+namespace Simple.AMT.AMTPackets
 {
     public class EventLog : DataPacket
     {

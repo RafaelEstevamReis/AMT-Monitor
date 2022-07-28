@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\AMT.Lib\AMT.Lib.csproj" />
+    <ProjectReference Include="..\AMT.Lib\Simple.AMT.csproj" />
   </ItemGroup>
 
 </Project>

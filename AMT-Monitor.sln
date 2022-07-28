@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.2.32630.192
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AMT.App", "AMT.App\AMT.App.csproj", "{9C4EC8AE-073F-4432-ACB7-D68D3DB88982}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AMT.App", "AMT.App\AMT.App.csproj", "{9C4EC8AE-073F-4432-ACB7-D68D3DB88982}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AMT.Lib", "AMT.Lib\AMT.Lib.csproj", "{5CC679E1-FA3A-4796-A98A-750A237EA66E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Simple.AMT", "AMT.Lib\Simple.AMT.csproj", "{5CC679E1-FA3A-4796-A98A-750A237EA66E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

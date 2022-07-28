@@ -3,7 +3,7 @@ using System.Linq;
 using System.Net.Sockets;
 using System.Threading.Tasks;
 
-namespace AMT.Lib
+namespace Simple.AMT
 {
     public class Listener
     {
