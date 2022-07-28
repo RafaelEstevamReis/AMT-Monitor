@@ -4,7 +4,7 @@
 		<LangVersion>10.0</LangVersion>
 		<ImplicitUsings>disable</ImplicitUsings>
 		<Nullable>disable</Nullable>
-		<Version>0.1.2</Version>
+		<Version>0.2.0</Version>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<Authors>RafaelEstevam.Net</Authors>
 		<Company>RafaelEstevam.Net</Company>
@@ -14,7 +14,7 @@
 		<PackageProjectUrl>https://github.com/RafaelEstevamReis/AMT-Monitor</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/RafaelEstevamReis/AMT-Monitor</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
-		<PackageReleaseNotes>Paired with commit 54b8f8b</PackageReleaseNotes>
+		<PackageReleaseNotes>Paired with commit 80efef6</PackageReleaseNotes>
 	</PropertyGroup>
 
 </Project>
