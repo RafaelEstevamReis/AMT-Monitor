@@ -23,12 +23,13 @@ namespace Simple.AMT
             CentralInformation = new();
         }
 
+        bool running = false;
         public async Task StartAsync()
         {
+            running = true;
             listener = new TcpListener(System.Net.IPAddress.Any, port);
             listener.Start();
-
-            while (true)
+            while (running)
             {
                 if (!listener.Pending())
                 {
@@ -38,6 +39,11 @@ namespace Simple.AMT
                 var client = await listener.AcceptTcpClientAsync();
                 _ = processClientAsync(client);
             }
+            listener.Stop();
+        }
+        public void Stop()
+        {
+            running = false;
         }
 
         private async Task processClientAsync(TcpClient client)
@@ -68,6 +74,7 @@ namespace Simple.AMT
 
             while (client.Connected)
             {
+                if (!running) break;
                 if (client.Available < 2)
                 {
                     await Task.Delay(50);
