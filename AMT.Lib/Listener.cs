@@ -43,13 +43,19 @@ namespace Simple.AMT
             using var stream = client.GetStream();
             byte[] buffer = new byte[512];
 
-            while (true)
+            DateTime lastReceive = DateTime.Now;
+
+            while (client.Connected)
             {
                 if (client.Available < 2)
                 {
                     await Task.Delay(50);
+
+                    if ((DateTime.Now - lastReceive).TotalMinutes > 5) client.Close();
+
                     continue;
                 }
+                lastReceive = DateTime.Now;
 
                 // read len
                 var pktLen = stream.ReadByte();
