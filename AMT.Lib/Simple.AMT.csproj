@@ -16,7 +16,7 @@
 		<PackageProjectUrl>https://github.com/RafaelEstevamReis/AMT-Monitor</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/RafaelEstevamReis/AMT-Monitor</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
-		<PackageReleaseNotes>Paired with commit 30a6f27</PackageReleaseNotes>
+		<PackageReleaseNotes>Paired with commit d37e576</PackageReleaseNotes>
 	</PropertyGroup>
 
 </Project>
