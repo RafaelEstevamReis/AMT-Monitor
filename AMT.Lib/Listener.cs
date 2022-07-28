@@ -98,7 +98,7 @@ namespace Simple.AMT
                 pktLen++; // Include CheckSum
                 var len = await stream.ReadAsync(buffer, 0, pktLen); // +CHK
 
-                showHex($"{DateTime.Now:T} L{len} ", buffer, len);
+                //showHex($"{DateTime.Now:T} L{len} ", buffer, len);
 
                 if (len == 0) { }
                 if (len != pktLen)
