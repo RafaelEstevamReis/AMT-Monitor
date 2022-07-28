@@ -79,7 +79,9 @@ namespace Simple.AMT
                 {
                     await Task.Delay(50);
 
-                    if ((DateTime.Now - lastReceive).TotalMinutes > 5) client.Close();
+                    // A ping (0x94-central information) is received every 2 minutes
+                    // If nothing arrive after 5 minutes, the connection was lost/dropped
+                    if ((DateTime.Now - lastReceive).TotalMinutes > 4) client.Close();
 
                     continue;
                 }
@@ -117,13 +119,11 @@ namespace Simple.AMT
             pktLen++; // Include CheckSum
             var len = await stream.ReadAsync(buffer, 0, pktLen); // +CHK
 
-            //showHex($"{DateTime.Now:T} L{len} ", buffer, len);
-
             if (len == 0) { }
             if (len != pktLen)
-            {
+            {  }
 
-            }
+            showHex($"{DateTime.Now:T} L{len} ", buffer, len);
 
             bool ack;
             switch (buffer[0])
@@ -143,7 +143,7 @@ namespace Simple.AMT
                     }
 
                     break;
-                case 0xC4: // MAC
+                case 0xC4: // MAC (len==8)
                     ack = processMac(buffer, len);
                     OnMessage?.Invoke(this, new ListenerModels.MessageEventArgs()
                     {
