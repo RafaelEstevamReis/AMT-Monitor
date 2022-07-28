@@ -11,10 +11,11 @@ namespace Simple.AMT
         private readonly int port;
         private TcpListener listener;
 
-        public ListenerModels.CentralInformation CentralInformation { get; private set; }
+        //public ListenerModels.CentralInformation CentralInformation { get; private set; }
         public event EventHandler<ListenerModels.EventInformation> OnEvent;
         public event EventHandler<ListenerModels.MessageEventArgs> OnMessage;
         public event EventHandler<Exception> OnClientException;
+        public event EventHandler<Exception> OnError;
 
         public bool Debug_PrintHex { get; set; }
 
@@ -22,7 +23,7 @@ namespace Simple.AMT
         {
             this.port = port;
 
-            CentralInformation = new();
+            //CentralInformation = new();
         }
 
         bool running = false;
@@ -69,6 +70,7 @@ namespace Simple.AMT
         }
         private async Task _processClientAsync(TcpClient client)
         {
+            var centralInformation = new ListenerModels.CentralInformation();
             using var stream = client.GetStream();
             byte[] buffer = new byte[512];
 
@@ -91,7 +93,7 @@ namespace Simple.AMT
 
                 try
                 {
-                    await receivePacketAsync(stream, buffer);
+                    await receivePacketAsync(stream, buffer, centralInformation);
                 }
                 catch (Exception ex)
                 {
@@ -99,7 +101,7 @@ namespace Simple.AMT
                 }
             }
         }
-        private async Task receivePacketAsync(NetworkStream stream, byte[] buffer)
+        private async Task receivePacketAsync(NetworkStream stream, byte[] buffer, ListenerModels.CentralInformation centralInformation)
         {
             // read len
             var pktLen = stream.ReadByte();
@@ -126,7 +128,7 @@ namespace Simple.AMT
             if (len != pktLen)
             { }
 
-            if(Debug_PrintHex) showHex($"{DateTime.Now:T} L{len} P{pktLen} ", buffer, len);
+            if (Debug_PrintHex) showHex($"{DateTime.Now:T} L{len} P{pktLen} ", buffer, len);
 
             bool ack;
             switch (buffer[0])
@@ -135,14 +137,14 @@ namespace Simple.AMT
                     ack = true;
                     break;
                 case 0x94: // IDENT (len==7)
-                    ack = processIdent(buffer, len);
-                    OnMessage?.Invoke(this, new ListenerModels.MessageEventArgs()
+                    ack = processIdent(centralInformation, buffer, len);
+                    sendMessage(centralInformation, new ListenerModels.MessageEventArgs()
                     {
-                        Message = $"Central information Received [{CentralInformation.Connection}] Id: {CentralInformation.AccountId} PartilMac: {CentralInformation.PartialMacAddressString}",
+                        Message = $"Central information Received [{centralInformation.Connection}] Id: {centralInformation.AccountId} PartilMac: {centralInformation.PartialMacAddressString}",
                         Type = ListenerModels.MessageEventArgs.MessageType.CentralInformation
                     });
 
-                    if (CentralInformation.MacAddress == null)
+                    if (centralInformation.MacAddress == null)
                     {
                         // request MAC
                         stream.Write(new byte[] { 0x01, 0xc4, 0x3a });
@@ -150,8 +152,8 @@ namespace Simple.AMT
 
                     break;
                 case 0xC4: // MAC (len==8)
-                    ack = processMac(buffer, len);
-                    OnMessage?.Invoke(this, new ListenerModels.MessageEventArgs()
+                    ack = processMac(centralInformation, buffer, len);
+                    sendMessage(centralInformation, new ListenerModels.MessageEventArgs()
                     {
                         Message = "Central MAC Received",
                         Type = ListenerModels.MessageEventArgs.MessageType.MacReceived
@@ -160,7 +162,7 @@ namespace Simple.AMT
 
                 case 0x80: // Date/Time
                     ack = await processDateTimeAsync(stream, buffer, len);
-                    OnMessage?.Invoke(this, new ListenerModels.MessageEventArgs()
+                    sendMessage(centralInformation, new ListenerModels.MessageEventArgs()
                     {
                         Message = "Central asked current Date/Time",
                         Type = ListenerModels.MessageEventArgs.MessageType.DateTimeRequest,
@@ -168,16 +170,16 @@ namespace Simple.AMT
                     break;
 
                 case 0xB0: // Event
-                    ack = processEvent(buffer, len, photo: false);
-                    OnMessage?.Invoke(this, new ListenerModels.MessageEventArgs()
+                    ack = processEvent(centralInformation, buffer, len, photo: false);
+                    sendMessage(centralInformation, new ListenerModels.MessageEventArgs()
                     {
                         Message = "Central Event",
                         Type = ListenerModels.MessageEventArgs.MessageType.Event
                     });
                     break;
                 case 0xB5: // Event
-                    ack = processEvent(buffer, len, photo: true);
-                    OnMessage?.Invoke(this, new ListenerModels.MessageEventArgs()
+                    ack = processEvent(centralInformation, buffer, len, photo: true);
+                    sendMessage(centralInformation, new ListenerModels.MessageEventArgs()
                     {
                         Message = "Central Photo Event",
                         Type = ListenerModels.MessageEventArgs.MessageType.EventWithPhoto
@@ -186,7 +188,7 @@ namespace Simple.AMT
 
                 default:
                     if (Debug_PrintHex) showHex($"{DateTime.Now:T} [UNKOW] L{len}P{pktLen} ", buffer, len);
-                    OnMessage?.Invoke(this, new ListenerModels.MessageEventArgs()
+                    sendMessage(centralInformation, new ListenerModels.MessageEventArgs()
                     {
                         Message = $"UNKOWN MESSAGE {buffer[0]} L{len}P{pktLen} {buildHexString(buffer, len)}",
                         Type = ListenerModels.MessageEventArgs.MessageType.UNKOWN
@@ -199,19 +201,18 @@ namespace Simple.AMT
             if (ack) await sendAckAsync(stream);
 
         }
-
-        private bool processIdent(byte[] buffer, int len)
+        private bool processIdent(ListenerModels.CentralInformation centralInformation,byte[] buffer, int len)
         {
-            CentralInformation.Connection = (ListenerModels.CentralInformation.ConnectionType)buffer[1];
-            CentralInformation.AccountId = fromBinary(buffer[2], buffer[3]);
-            CentralInformation.PartialMacAddress = new byte[] { buffer[4], buffer[5], buffer[6] };
+            centralInformation.Connection = (ListenerModels.CentralInformation.ConnectionType)buffer[1];
+            centralInformation.AccountId = fromBinary(buffer[2], buffer[3]);
+            centralInformation.PartialMacAddress = new byte[] { buffer[4], buffer[5], buffer[6] };
 
             return true;
         }
-        private bool processMac(byte[] buffer, int len)
+        private bool processMac(ListenerModels.CentralInformation centralInformation,byte[] buffer, int len)
         {
-            CentralInformation.MacAddress = new byte[6];
-            Buffer.BlockCopy(buffer, 1, CentralInformation.MacAddress, 0, 6);
+            centralInformation.MacAddress = new byte[6];
+            Buffer.BlockCopy(buffer, 1, centralInformation.MacAddress, 0, 6);
             return true;
         }
         private static async Task<bool> processDateTimeAsync(NetworkStream stream, byte[] buffer, int len)
@@ -220,7 +221,7 @@ namespace Simple.AMT
             return false;
         }
 
-        private bool processEvent(byte[] buffer, int len, bool photo)
+        private bool processEvent(ListenerModels.CentralInformation centralInformation, byte[] buffer, int len, bool photo)
         {
             if (photo && len != 21)
             {
@@ -246,9 +247,32 @@ namespace Simple.AMT
                 eventInfo.PhotoCount = buffer[19];
             }
 
-            OnEvent?.Invoke(this, eventInfo);
+            sendEvent(centralInformation, eventInfo);
 
             return true;
+        }
+
+        // AsyncVoid, do not wait
+        private async void sendMessage(ListenerModels.CentralInformation central, ListenerModels.MessageEventArgs messageEventArgs)
+        {
+            if (OnMessage == null) return;
+
+            try
+            {
+                OnMessage?.Invoke(central, messageEventArgs);
+            }
+            catch(Exception ex) { OnError?.Invoke(this, ex); }
+        }
+        // AsyncVoid, do not wait
+        private async void sendEvent(ListenerModels.CentralInformation central, ListenerModels.EventInformation eventInfoArgs)
+        {
+            if (OnEvent == null) return;
+
+            try
+            {
+                OnEvent?.Invoke(central, eventInfoArgs);
+            }
+            catch (Exception ex) { OnError?.Invoke(this, ex); }
         }
 
         private static async Task sendAckAsync(NetworkStream stream)
