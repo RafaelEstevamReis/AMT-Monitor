@@ -13,6 +13,7 @@ namespace Simple.AMT
         public ListenerModels.CentralInformation CentralInformation { get; private set; }
         public event EventHandler<ListenerModels.EventInformation> OnEvent;
         public event EventHandler<ListenerModels.MessageEventArgs> OnMessage;
+        public event EventHandler<Exception> OnClientException;
 
         public Listener(int port)
         {
@@ -39,6 +40,25 @@ namespace Simple.AMT
         }
 
         private async Task processaClientAsync(TcpClient client)
+        {
+            try
+            {
+                await _processaClientAsync(client);
+            }
+            catch (Exception ex)
+            {
+                OnClientException?.Invoke(this, ex);
+            }
+            finally
+            {
+                if (client != null)
+                {
+                    if (client.Connected) client.Close();
+                    client.Dispose();
+                }
+            }
+        }
+        private async Task _processaClientAsync(TcpClient client)
         {
             using var stream = client.GetStream();
             byte[] buffer = new byte[512];
