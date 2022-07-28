@@ -16,6 +16,8 @@ namespace Simple.AMT
         public event EventHandler<ListenerModels.MessageEventArgs> OnMessage;
         public event EventHandler<Exception> OnClientException;
 
+        public bool Debug_PrintHex { get; set; }
+
         public Listener(int port)
         {
             this.port = port;
@@ -113,6 +115,7 @@ namespace Simple.AMT
                 /* ?? */
                 // heart beat
                 await sendAckAsync(stream);
+                return;
             }
             if (pktLen > 127) { /* ?? */ }
 
@@ -121,13 +124,16 @@ namespace Simple.AMT
 
             if (len == 0) { }
             if (len != pktLen)
-            {  }
+            { }
 
-            showHex($"{DateTime.Now:T} L{len} ", buffer, len);
+            if(Debug_PrintHex) showHex($"{DateTime.Now:T} L{len} P{pktLen} ", buffer, len);
 
             bool ack;
             switch (buffer[0])
             {
+                case 0xF7: // ?
+                    ack = true;
+                    break;
                 case 0x94: // IDENT (len==7)
                     ack = processIdent(buffer, len);
                     OnMessage?.Invoke(this, new ListenerModels.MessageEventArgs()
@@ -179,7 +185,7 @@ namespace Simple.AMT
                     break;
 
                 default:
-                    showHex($"{DateTime.Now:T} [UNKOW] L{len} ", buffer, len);
+                    if (Debug_PrintHex) showHex($"{DateTime.Now:T} [UNKOW] L{len} ", buffer, len);
                     OnMessage?.Invoke(this, new ListenerModels.MessageEventArgs()
                     {
                         Message = $"UNKOWN MESSAGE {buffer[0]} L{len} {buildHexString(buffer, len)}",
