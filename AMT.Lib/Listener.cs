@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Net.Sockets;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Simple.AMT
@@ -174,7 +175,7 @@ namespace Simple.AMT
                     showHex($"{DateTime.Now:T} [UNKOW] L{len} ", buffer, len);
                     OnMessage?.Invoke(this, new ListenerModels.MessageEventArgs()
                     {
-                        Message = "UNKOWN MESSAGE " + buffer[0],
+                        Message = $"UNKOWN MESSAGE {buffer[0]} L{len} {buildHexString(buffer, len)}",
                         Type = ListenerModels.MessageEventArgs.MessageType.UNKOWN
                     });
                     ack = true;
@@ -272,13 +273,16 @@ namespace Simple.AMT
         }
         private static void showHex(byte[] buffer, int len)
         {
+            Console.WriteLine(buildHexString(buffer, len));
+        }
+        private static string buildHexString(byte[] buffer, int len)
+        {
+            var sb = new StringBuilder();
             for (int i = 0; i < len; i++)
             {
-                //if (buffer[i] >= 32 && buffer[i] < 128) Console.Write((char)buffer[i]);
-                //else
-                Console.Write($"[{buffer[i]:X2}]");
+                sb.Append($"[{buffer[i]:X2}]");
             }
-            Console.WriteLine();
+            return sb.ToString();
         }
 
         /// <summary>
@@ -288,7 +292,7 @@ namespace Simple.AMT
         {
             if (number > 99) throw new InvalidOperationException("number must be smaller than 100");
 
-            // shit nibbles
+            // shift nibbles
             return (byte)(((number / 10) << 4) + (number % 10));
         }
         static int fromBinary(params byte[] bytes)
@@ -312,7 +316,7 @@ namespace Simple.AMT
             foreach (var digito in bytes.Reverse())
             {
                 if (digito == 0x0a) // zero
-                { } // multiplica
+                { } // multiply
                 else if (digito >= 0x01 && digito <= 0x09)
                 {
                     numero += posicao * digito;
