@@ -43,6 +43,9 @@ namespace Simple.AMT
             using var stream = client.GetStream();
             byte[] buffer = new byte[512];
 
+            // request MAC
+            stream.Write(new byte[] { 0x01, 0xc4, 0x3a });
+
             while (true)
             {
                 if (client.Available < 2)
@@ -154,6 +157,8 @@ namespace Simple.AMT
         }
         private bool processMac(byte[] buffer, int len)
         {
+            CentralInformation.MacAddress = new byte[6];
+            Buffer.BlockCopy(buffer, 1, CentralInformation.MacAddress, 0, 6);
             return true;
         }
         private async Task<bool> processDateTimeAsync(NetworkStream stream, byte[] buffer, int len)
