@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace Simple.AMT
 {
+    /// <summary>
+    /// Connect-Id IP Monitoring class
+    /// </summary>
     public class Listener
     {
         private readonly int port;
