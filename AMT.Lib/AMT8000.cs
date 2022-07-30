@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace Simple.AMT
 {
+    /// <summary>
+    /// AMT-8000 Client
+    /// </summary>
     public class AMT8000
     {
         public ConnectionInfo ConnectionInfo { get; }
