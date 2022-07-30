@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Simple.AMT.AMTPackets
 {
@@ -27,6 +28,7 @@ namespace Simple.AMT.AMTPackets
 
         public DateTime CentralDateTime { get; set; }
         public DateTime PacketBuiltTime { get; set; }
+        public ZoneInfo[] Zones { get; set; }
 
         public static DataPacket Request()
         {
@@ -94,8 +96,37 @@ namespace Simple.AMT.AMTPackets
                 hour: hexToDec(Data[67]),
                 minute: hexToDec(Data[68]),
                 second: hexToDec(Data[69]));
-
             BatteryLevel = Data[134];
+
+            int idxOpen = 38;
+            int idxTrigger = 46;
+            int idxByPass = 54;
+            List<ZoneInfo> lstZones = new List<ZoneInfo>();            
+            for (int block = 0; block < 8; block++) // 8 byte-blocks
+            {
+                var bytesOpen = Data[idxOpen++];
+                var bytesTrigger = Data[idxTrigger++];
+                var bytesBypass = Data[idxByPass++];
+
+                for (byte i = 0; i < 8; i++)
+                {
+                    lstZones.Add(new ZoneInfo()
+                    {
+                        Open = IsBit(bytesOpen, i),
+                        Trigger = IsBit(bytesTrigger, i),
+                        ByPass = IsBit(bytesBypass, i),
+                    }) ;
+                }
+            }
+            Zones = lstZones.ToArray();
+
+        }
+
+        public class ZoneInfo
+        {
+            public bool Open { get; set; }
+            public bool Trigger { get; set; }
+            public bool ByPass { get; set; }
         }
     }
 }
