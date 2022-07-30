@@ -3,26 +3,26 @@ using System.Text.Json;
 
 Console.WriteLine("START");
 
-AMT8000 amt = new AMT8000(new Simple.AMT.AMTModels.ConnectionInfo()
+bool listen = false;
+
+if(listen)
 {
-    IP = "192.168.1.0",
-    Port = 9876,
-    Password = "123456",
-});
-await amt.ConnectAsync();
+    var cnn = new Listener(9009);
+    cnn.OnEvent += Cnn_OnEvent;
+    cnn.OnMessage += (s, m) => Console.WriteLine($"{DateTime.Now} {m}");
 
-
-
-
-
-return;
-
-var cnn = new Listener(9009);
-cnn.OnEvent += Cnn_OnEvent;
-cnn.OnMessage += (s, m) => Console.WriteLine($"{DateTime.Now} {m}");
-
-await cnn.StartAsync();
-
+    await cnn.StartAsync();
+}
+else // Connect
+{
+    AMT8000 amt = new AMT8000(new Simple.AMT.AMTModels.ConnectionInfo()
+    {
+        IP = "192.168.1.0",
+        Port = 9876,
+        Password = "123456",
+    });
+    await amt.ConnectAsync();
+}
 
 void Cnn_OnEvent(object? sender, Simple.AMT.ListenerModels.EventInformation e)
 {
