@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Simple.AMT
@@ -11,6 +12,7 @@ namespace Simple.AMT
     /// </summary>
     public class Listener
     {
+        private static long lastCnnId = 0;
         private readonly int port;
         private TcpListener listener;
 
@@ -25,7 +27,7 @@ namespace Simple.AMT
         public Listener(int port)
         {
             this.port = port;
-
+            Debug_PrintHex = true;
             //CentralInformation = new();
         }
 
@@ -54,9 +56,10 @@ namespace Simple.AMT
 
         private async Task processClientAsync(TcpClient client)
         {
+            var id = Interlocked.Increment(ref lastCnnId);
             try
             {
-                await _processClientAsync(client);
+                await _processClientAsync(client, id);
             }
             catch (Exception ex)
             {
@@ -71,10 +74,11 @@ namespace Simple.AMT
                 }
             }
         }
-        private async Task _processClientAsync(TcpClient client)
+        private async Task _processClientAsync(TcpClient client, long id)
         {
             var centralInformation = new ListenerModels.CentralInformation();
             using var stream = client.GetStream();
+            
             byte[] buffer = new byte[512];
 
             DateTime lastReceive = DateTime.Now;
@@ -82,6 +86,7 @@ namespace Simple.AMT
             while (client.Connected)
             {
                 if (!running) break;
+
                 if (client.Available < 2)
                 {
                     await Task.Delay(50);
@@ -96,7 +101,7 @@ namespace Simple.AMT
 
                 try
                 {
-                    await receivePacketAsync(stream, buffer, centralInformation);
+                    await receivePacketAsync(stream, buffer, centralInformation, id);
                 }
                 catch (Exception ex)
                 {
@@ -104,7 +109,7 @@ namespace Simple.AMT
                 }
             }
         }
-        private async Task receivePacketAsync(NetworkStream stream, byte[] buffer, ListenerModels.CentralInformation centralInformation)
+        private async Task receivePacketAsync(NetworkStream stream, byte[] buffer, ListenerModels.CentralInformation centralInformation, long cnnId)
         {
             // read len
             var pktLen = stream.ReadByte();
@@ -120,7 +125,10 @@ namespace Simple.AMT
                 /* ?? */
                 // heart beat
                 await sendAckAsync(stream);
+                if (Debug_PrintHex) Console.WriteLine($"{DateTime.Now:T} [CnnId:{cnnId}] 0xF7 HeartBeat");
                 return;
+
+
             }
             if (pktLen > 127) { /* ?? */ }
 
@@ -131,7 +139,7 @@ namespace Simple.AMT
             if (len != pktLen)
             { }
 
-            if (Debug_PrintHex) showHex($"{DateTime.Now:T} L{len} P{pktLen} ", buffer, len);
+            if (Debug_PrintHex) showHex($"{DateTime.Now:T} [CnnId:{cnnId}] L{len} P{pktLen} ", buffer, len);
 
             bool ack;
             switch (buffer[0])
@@ -143,7 +151,7 @@ namespace Simple.AMT
                     ack = processIdent(centralInformation, buffer, len);
                     sendMessage(centralInformation, new ListenerModels.MessageEventArgs()
                     {
-                        Message = $"Central information Received [{centralInformation.Connection}] Id: {centralInformation.AccountId} PartilMac: {centralInformation.PartialMacAddressString}",
+                        Message = $"Central information Received [{centralInformation.Connection}] AccId: {centralInformation.AccountId} PartilMac: {centralInformation.PartialMacAddressString}",
                         Type = ListenerModels.MessageEventArgs.MessageType.CentralInformation
                     });
 
