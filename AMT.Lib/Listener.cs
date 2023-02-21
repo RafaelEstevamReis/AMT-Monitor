@@ -27,7 +27,9 @@ namespace Simple.AMT
         public Listener(int port)
         {
             this.port = port;
+#if DEBUG
             Debug_PrintHex = true;
+#endif
             //CentralInformation = new();
         }
 
@@ -78,7 +80,7 @@ namespace Simple.AMT
         {
             var centralInformation = new ListenerModels.CentralInformation();
             using var stream = client.GetStream();
-            
+
             byte[] buffer = new byte[512];
 
             DateTime lastReceive = DateTime.Now;
@@ -87,7 +89,7 @@ namespace Simple.AMT
             {
                 if (!running) break;
 
-                if (client.Available < 2)
+                if (client.Available <= 0)
                 {
                     await Task.Delay(50);
 
@@ -101,7 +103,10 @@ namespace Simple.AMT
 
                 try
                 {
-                    await receivePacketAsync(stream, buffer, centralInformation, id);
+                    // can have 1 byte (HeartBeat), or be the Packet Len
+                    var pktLen = stream.ReadByte();
+                    await receivePacketAsync(pktLen, stream, buffer, centralInformation, id);
+                    await stream.FlushAsync();
                 }
                 catch (Exception ex)
                 {
@@ -109,12 +114,8 @@ namespace Simple.AMT
                 }
             }
         }
-        private async Task receivePacketAsync(NetworkStream stream, byte[] buffer, ListenerModels.CentralInformation centralInformation, long cnnId)
+        private async Task receivePacketAsync(int pktLen, NetworkStream stream, byte[] buffer, ListenerModels.CentralInformation centralInformation, long cnnId)
         {
-            // read len
-            var pktLen = stream.ReadByte();
-            await Task.Delay(50);
-
             if (pktLen == 0)
             {
                 /* ?? */
@@ -127,10 +128,11 @@ namespace Simple.AMT
                 await sendAckAsync(stream);
                 if (Debug_PrintHex) Console.WriteLine($"{DateTime.Now:T} [CnnId:{cnnId}] 0xF7 HeartBeat");
                 return;
-
-
             }
             if (pktLen > 127) { /* ?? */ }
+
+            // Wait the remaining
+            await Task.Delay(50);
 
             pktLen++; // Include CheckSum
             var len = await stream.ReadAsync(buffer, 0, pktLen); // +CHK
@@ -155,6 +157,9 @@ namespace Simple.AMT
                         Type = ListenerModels.MessageEventArgs.MessageType.CentralInformation
                     });
 
+                    // ack first
+                    await sendAckAsync(stream); ack = false;
+
                     if (centralInformation.MacAddress == null)
                     {
                         // request MAC
@@ -172,6 +177,9 @@ namespace Simple.AMT
                     break;
 
                 case 0x80: // Date/Time
+                    // ack first
+                    //await sendAckAsync(stream); ack = false;
+                    // answer
                     ack = await processDateTimeAsync(stream, buffer, len);
                     sendMessage(centralInformation, new ListenerModels.MessageEventArgs()
                     {
@@ -212,7 +220,7 @@ namespace Simple.AMT
             if (ack) await sendAckAsync(stream);
 
         }
-        private bool processIdent(ListenerModels.CentralInformation centralInformation,byte[] buffer, int len)
+        private bool processIdent(ListenerModels.CentralInformation centralInformation, byte[] buffer, int len)
         {
             centralInformation.Connection = (ListenerModels.CentralInformation.ConnectionType)buffer[1];
             centralInformation.AccountId = fromBinary(buffer[2], buffer[3]);
@@ -220,7 +228,7 @@ namespace Simple.AMT
 
             return true;
         }
-        private bool processMac(ListenerModels.CentralInformation centralInformation,byte[] buffer, int len)
+        private bool processMac(ListenerModels.CentralInformation centralInformation, byte[] buffer, int len)
         {
             centralInformation.MacAddress = new byte[6];
             Buffer.BlockCopy(buffer, 1, centralInformation.MacAddress, 0, 6);
@@ -272,7 +280,7 @@ namespace Simple.AMT
             {
                 OnMessage?.Invoke(central, messageEventArgs);
             }
-            catch(Exception ex) { OnError?.Invoke(this, ex); }
+            catch (Exception ex) { OnError?.Invoke(this, ex); }
         }
         // AsyncVoid, do not wait
         private async void sendEvent(ListenerModels.CentralInformation central, ListenerModels.EventInformation eventInfoArgs)
