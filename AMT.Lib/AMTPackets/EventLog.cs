@@ -76,6 +76,11 @@ namespace Simple.AMT.AMTPackets
             public ushort ZoneUser { get; set; }
             public byte Partition { get; set; }
             public byte Photo { get; set; }
+
+            public override string ToString()
+            {
+                return $"{EventId} {DateTime:G} {EventType} {ZoneUser}";
+            }
         }
     }
 }

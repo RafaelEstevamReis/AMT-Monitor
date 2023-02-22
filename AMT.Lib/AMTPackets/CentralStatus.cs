@@ -127,6 +127,11 @@ namespace Simple.AMT.AMTPackets
             public bool Open { get; set; }
             public bool Trigger { get; set; }
             public bool ByPass { get; set; }
+
+            public override string ToString()
+            {
+                return $"Open: {Open} Trigger: {Trigger} ByPass: {ByPass}";
+            }
         }
     }
 }
