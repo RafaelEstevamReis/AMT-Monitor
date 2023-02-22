@@ -82,6 +82,13 @@ namespace Simple.AMT
             }
             return names.Where(n => n != null).ToArray();
         }
+        public async Task<ZoneTypes.ZoneType[]> GetZoneTypesAsync()
+        {
+            var stream = tcpClient.GetStream();
+            var result = await sendReceiveAsync<ZoneTypes>(stream, ZoneTypes.Request());
+   
+            return result.Types;
+        }
 
         private static async Task<T> sendReceiveAsync<T>(NetworkStream stream, DataPacket toSend)
             where T : DataPacket

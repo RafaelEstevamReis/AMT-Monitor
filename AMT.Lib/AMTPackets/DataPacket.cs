@@ -10,6 +10,7 @@ namespace Simple.AMT.AMTPackets
             CONNECT_PASSWORD = 0xF0F0,
             CENTRAL_STATUS = 0x0B4A,
             USER_NAMES = 0x32E0,
+            ZONE_TYPES = 0x33A0,
             ZONE_NAMES = 0x33E0,
             ZONE_CONFIGURATION = 0x3660,
             EVENT_POINTER = 0x3003,
