@@ -2,6 +2,7 @@
 using Simple.AMT.AMTPackets;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Sockets;
 using System.Threading.Tasks;
 
@@ -74,12 +75,12 @@ namespace Simple.AMT
         {
             var stream = tcpClient.GetStream();
             var names = new List<ItemNames.NameEntry>();
-            for (int page = 0; page < 4; page++)
+            for (int page = 0; page < 7; page++)
             {
                 var namesResult = await sendReceiveAsync<ItemNames>(stream, ItemNames.Request(page, DataPacket.Commands.USER_NAMES));
                 names.AddRange(namesResult.RegiteredNames);
             }
-            return names.ToArray();
+            return names.Where(n => n != null).ToArray();
         }
 
         private static async Task<T> sendReceiveAsync<T>(NetworkStream stream, DataPacket toSend)

@@ -9,8 +9,12 @@ namespace Simple.AMT.AMTPackets
 
         public static DataPacket Request(int block, Commands command)
         {
-            byte[] data = new byte[ENTRIES_PER_BLOCK];
-            for (int i = 0; i < ENTRIES_PER_BLOCK; i++)
+            int entries = ENTRIES_PER_BLOCK;
+
+            if (command == Commands.USER_NAMES && block == 6) entries = 4;
+
+            byte[] data = new byte[entries];
+            for (int i = 0; i < entries; i++)
             {
                 data[i] = (byte)((block * ENTRIES_PER_BLOCK) + i);
             }
@@ -28,6 +32,8 @@ namespace Simple.AMT.AMTPackets
 
             for (int i = 0; i < ENTRIES_PER_BLOCK; i++)
             {
+                if (offset + 15 > Data.Length) return;
+
                 var str = enc.GetString(Data, offset + 1, 14);
                 var devId = Data[offset];
                 offset += 15;
