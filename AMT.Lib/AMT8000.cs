@@ -2,6 +2,7 @@
 using Simple.AMT.AMTPackets;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Sockets;
 using System.Threading.Tasks;
@@ -38,58 +39,54 @@ namespace Simple.AMT
 
         public async Task<CentralStatus> GetCentralStatusAsync()
         {
-            var stream = tcpClient.GetStream();
-            return await sendReceiveAsync<CentralStatus>(stream, CentralStatus.Request());
+            return await sendReceiveAsync<CentralStatus>(CentralStatus.Request());
         }
         public async Task<EventLog.Event[]> GetEventsAsync()
         {
-            var stream = tcpClient.GetStream();
             var events = new List<EventLog.Event>();
-            var pointerResult = await sendReceiveAsync<EventPointer>(stream, EventPointer.Request());
+            var pointerResult = await sendReceiveAsync<EventPointer>(EventPointer.Request());
             for (int i = 0; i < 32; i++)
             {
-                var logResult = await sendReceiveAsync<EventLog>(stream, EventLog.Request(i, pointerResult.Index));
+                var logResult = await sendReceiveAsync<EventLog>(EventLog.Request(i, pointerResult.Index));
                 events.AddRange(logResult.Events);
             }
             return events.ToArray();
         }
         public async Task<SensorConfiguration.Sensor[]> GetSensorConfigurationAsync()
         {
-            var stream = tcpClient.GetStream();
-            var result = await sendReceiveAsync<SensorConfiguration>(stream, SensorConfiguration.Request());
+            var result = await sendReceiveAsync<SensorConfiguration>(SensorConfiguration.Request());
             return result.Sensors;
         }
 
         public async Task<ItemNames.NameEntry[]> GetZonesNamesAsync()
         {
-            var stream = tcpClient.GetStream();
             var names = new List<ItemNames.NameEntry>();
             for (int page = 0; page < 4; page++)
             {
-                var namesResult = await sendReceiveAsync<ItemNames>(stream, ItemNames.Request(page, DataPacket.Commands.ZONE_NAMES));
+                var namesResult = await sendReceiveAsync<ItemNames>(ItemNames.Request(page, DataPacket.Commands.ZONE_NAMES));
                 names.AddRange(namesResult.Names);
             }
             return names.ToArray();
         }
         public async Task<ItemNames.NameEntry[]> GetUserNamesAsync()
         {
-            var stream = tcpClient.GetStream();
             var names = new List<ItemNames.NameEntry>();
             for (int page = 0; page < 7; page++)
             {
-                var namesResult = await sendReceiveAsync<ItemNames>(stream, ItemNames.Request(page, DataPacket.Commands.USER_NAMES));
+                var namesResult = await sendReceiveAsync<ItemNames>(ItemNames.Request(page, DataPacket.Commands.USER_NAMES));
                 names.AddRange(namesResult.Names);
             }
             return names.Where(n => n != null).ToArray();
         }
         public async Task<ZoneTypes.ZoneType[]> GetZoneTypesAsync()
         {
-            var stream = tcpClient.GetStream();
-            var result = await sendReceiveAsync<ZoneTypes>(stream, ZoneTypes.Request());
-   
+            var result = await sendReceiveAsync<ZoneTypes>(ZoneTypes.Request());
+
             return result.Types;
         }
 
+        private async Task<T> sendReceiveAsync<T>(DataPacket toSend) where T : DataPacket
+            => await sendReceiveAsync<T>(tcpClient.GetStream(), toSend);
         private static async Task<T> sendReceiveAsync<T>(NetworkStream stream, DataPacket toSend)
             where T : DataPacket
         {
