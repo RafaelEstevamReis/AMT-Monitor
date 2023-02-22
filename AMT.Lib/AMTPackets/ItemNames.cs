@@ -5,7 +5,7 @@ namespace Simple.AMT.AMTPackets
     public class ItemNames : DataPacket
     {
         private const int ENTRIES_PER_BLOCK = 16;
-        public NameEntry[] RegiteredNames { get; set; }
+        public NameEntry[] Names { get; set; }
 
         public static DataPacket Request(int block, Commands command)
         {
@@ -25,7 +25,7 @@ namespace Simple.AMT.AMTPackets
         public override void Unpack(byte[] receivedBytes)
         {
             base.Unpack(receivedBytes);
-            RegiteredNames = new NameEntry[ENTRIES_PER_BLOCK];
+            Names = new NameEntry[ENTRIES_PER_BLOCK];
 
             int offset = 0;
             var enc = Encoding.GetEncoding("ISO-8859-1");
@@ -38,7 +38,7 @@ namespace Simple.AMT.AMTPackets
                 var devId = Data[offset];
                 offset += 15;
 
-                RegiteredNames[i] = new NameEntry
+                Names[i] = new NameEntry
                 {
                     Id = devId,
                     Name = str.Replace("\0", "").Trim()

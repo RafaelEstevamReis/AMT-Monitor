@@ -67,7 +67,7 @@ namespace Simple.AMT
             for (int page = 0; page < 4; page++)
             {
                 var namesResult = await sendReceiveAsync<ItemNames>(stream, ItemNames.Request(page, DataPacket.Commands.ZONE_NAMES));
-                names.AddRange(namesResult.RegiteredNames);
+                names.AddRange(namesResult.Names);
             }
             return names.ToArray();
         }
@@ -78,7 +78,7 @@ namespace Simple.AMT
             for (int page = 0; page < 7; page++)
             {
                 var namesResult = await sendReceiveAsync<ItemNames>(stream, ItemNames.Request(page, DataPacket.Commands.USER_NAMES));
-                names.AddRange(namesResult.RegiteredNames);
+                names.AddRange(namesResult.Names);
             }
             return names.Where(n => n != null).ToArray();
         }
