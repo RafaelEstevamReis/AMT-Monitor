@@ -11,7 +11,7 @@ namespace Simple.AMT.AMTPackets
             CENTRAL_STATUS = 0x0B4A,
             USER_NAMES = 0x32E0,
             ZONE_NAMES = 0x33E0,
-            SENSOR_CONFIGURATION = 0x3660,
+            ZONE_CONFIGURATION = 0x3660,
             EVENT_POINTER = 0x3003,
             EVENT_LOG = 0x3900,
         }

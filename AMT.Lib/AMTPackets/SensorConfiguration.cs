@@ -6,7 +6,7 @@
 
         public static DataPacket Request()
         {
-            return BuildPacket(Commands.SENSOR_CONFIGURATION, 0xFF);
+            return BuildPacket(Commands.ZONE_CONFIGURATION, 0xFF);
         }
 
         public override void Unpack(byte[] receivedBytes)
@@ -33,6 +33,10 @@
             public byte Sensitivity { get; set; }
             public byte LedMode { get; set; }
             public byte OperationMode { get; set; }
+            public override string ToString()
+            {
+                return $"Id: {Id} Sensitivity: {Sensitivity} LedMode: {LedMode} OperationMode: {OperationMode}";
+            }
         }
     }
 }
