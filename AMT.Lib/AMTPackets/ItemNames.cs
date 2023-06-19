@@ -1,9 +1,11 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 
 namespace Simple.AMT.AMTPackets
 {
     public class ItemNames : DataPacket
     {
+        private static readonly Encoding enc8859 = Encoding.GetEncoding("ISO-8859-1");
         private const int ENTRIES_PER_BLOCK = 16;
         public NameEntry[] Names { get; set; }
 
@@ -28,13 +30,12 @@ namespace Simple.AMT.AMTPackets
             Names = new NameEntry[ENTRIES_PER_BLOCK];
 
             int offset = 0;
-            var enc = Encoding.GetEncoding("ISO-8859-1");
 
             for (int i = 0; i < ENTRIES_PER_BLOCK; i++)
             {
                 if (offset + 15 > Data.Length) return;
 
-                var str = enc.GetString(Data, offset + 1, 14);
+                var str = enc8859.GetString(Data, offset + 1, 14);
                 var devId = Data[offset];
                 offset += 15;
 
@@ -47,8 +48,13 @@ namespace Simple.AMT.AMTPackets
         }
         public class NameEntry
         {
+            public enum EntryType
+            {
+                Text,
+            }
             public byte Id { get; set; }
             public string Name { get; set; }
+            public EntryType Type { get; set; }
 
             public override string ToString()
             {

@@ -24,7 +24,7 @@ namespace Simple.AMT.AMTPackets
         public bool AnyZoneByPassed { get; set; }
         public bool StayMode { get; set; }
         public int Status { get; set; }
-        public byte BatteryLevel { get; set; }
+        public byte BatteryLevel { get; set; } // After some hours without power, battery level is 4
 
         public DateTime CentralDateTime { get; set; }
         public DateTime PacketBuiltTime { get; set; }

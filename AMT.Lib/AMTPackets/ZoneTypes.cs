@@ -29,6 +29,8 @@
             public string Name { get; set; }
             public byte Type { get; set; } 
 
+            public override string ToString()
+                => $"[{Id:00}] Type:{Type} {Name}";
         }
     }
 }
