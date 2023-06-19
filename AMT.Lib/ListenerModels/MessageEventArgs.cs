@@ -16,6 +16,7 @@ namespace Simple.AMT.ListenerModels
 
         public string Message { get; set; }
         public MessageType Type { get; set; }
+        public CentralInformation CentralReference { get; set; }
 
         public override string ToString()
             => Message;

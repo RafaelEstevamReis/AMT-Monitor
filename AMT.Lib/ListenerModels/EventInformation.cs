@@ -85,7 +85,6 @@
 
         public short PhotoIndex { get; set; }
         public byte PhotoCount { get; set; }
-
-
+        public CentralInformation CentralReference { get; set; }
     }
 }

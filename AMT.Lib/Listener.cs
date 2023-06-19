@@ -16,7 +16,6 @@ namespace Simple.AMT
         private readonly int port;
         private TcpListener listener;
 
-        //public ListenerModels.CentralInformation CentralInformation { get; private set; }
         public event EventHandler<ListenerModels.EventInformation> OnEvent;
         public event EventHandler<ListenerModels.MessageEventArgs> OnMessage;
         public event EventHandler<Exception> OnClientException;
@@ -278,6 +277,7 @@ namespace Simple.AMT
 
             try
             {
+                messageEventArgs.CentralReference = central;
                 OnMessage?.Invoke(central, messageEventArgs);
             }
             catch (Exception ex) { OnError?.Invoke(this, ex); }
@@ -289,6 +289,7 @@ namespace Simple.AMT
 
             try
             {
+                eventInfoArgs.CentralReference = central;
                 OnEvent?.Invoke(central, eventInfoArgs);
             }
             catch (Exception ex) { OnError?.Invoke(this, ex); }
