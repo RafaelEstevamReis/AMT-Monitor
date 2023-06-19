@@ -10,6 +10,35 @@
             GPRS_IP1 = 0x21,
             GPRS_IP2 = 0x22,
         }
+        public enum EventCode
+        {
+            Burglary = 130,
+
+            SystemTrouble = 300,
+            AC_Loss = 301,
+            SystemLowBattery = 302,
+            SystemReset = 305,
+            ProgrammingChanged = 306,
+            BatteryDead = 311,
+
+            CommLineLoss = 351,
+            FailedToSendEvent = 354,
+            SensorTrouble = 383,
+            SensorTamper = 383,
+            SensorRFLowBattery = 384,
+
+            ArmDisarm = 400,
+            UserArmDisarm = 401,
+            RemoteAccess = 410,
+
+            ZoneByPass = 570,
+        }
+        public enum ZoneKind
+        {
+            App = 0,
+            Controller = 1,
+            KeyBoard = 2,
+        }
 
         public ChannelType Channel { get; set; }
         public int ContactId { get; set; }
@@ -82,6 +111,14 @@
         public int Partition { get; set; }
         public int Zone { get; set; }
         public byte CheckSum { get; set; }
+
+        public ZoneKind GetZoneKind()
+            => (ZoneKind)(Zone / 100);
+        public int GetZoneUser()
+            => Zone % 100;
+
+
+
 
         public short PhotoIndex { get; set; }
         public byte PhotoCount { get; set; }
