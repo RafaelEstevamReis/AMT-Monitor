@@ -84,9 +84,19 @@ namespace Simple.AMT
 
             return result.Types;
         }
-        public async Task<bool[]> GetOpenZonesAsync()
+        public async Task<bool[]> GetOpenedZonesAsync()
         {
             var result = await sendReceiveAsync<ZoneStatus>(ZoneStatus.Request_Openned());
+            return result.SensorsValue;
+        }
+        public async Task<bool[]> GetBypassedZonesAsync()
+        {
+            var result = await sendReceiveAsync<ZoneStatus>(ZoneStatus.Request_Bypassed());
+            return result.SensorsValue;
+        }
+        public async Task<bool[]> GetTriggeredZonesAsync()
+        {
+            var result = await sendReceiveAsync<ZoneStatus>(ZoneStatus.Request_Triggered());
             return result.SensorsValue;
         }
 
