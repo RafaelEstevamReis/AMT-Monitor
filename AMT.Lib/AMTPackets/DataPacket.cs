@@ -15,6 +15,10 @@ namespace Simple.AMT.AMTPackets
             ZONE_CONFIGURATION = 0x3660,
             EVENT_POINTER = 0x3003,
             EVENT_LOG = 0x3900,
+
+            OPENED_ZONES = 0x0B11,
+            TRIGGERED_ZONES = 0x0B12,
+            BYPASSED_ZONES = 0x0B13,
         }
 
         public byte[] Header { get; set; }
