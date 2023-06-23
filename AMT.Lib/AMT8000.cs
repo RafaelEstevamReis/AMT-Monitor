@@ -84,6 +84,11 @@ namespace Simple.AMT
 
             return result.Types;
         }
+        public async Task<bool[]> GetOpenZonesAsync()
+        {
+            var result = await sendReceiveAsync<ZoneStatus>(ZoneStatus.Request_Openned());
+            return result.SensorsValue;
+        }
 
         private async Task<T> sendReceiveAsync<T>(DataPacket toSend) where T : DataPacket
             => await sendReceiveAsync<T>(tcpClient.GetStream(), toSend);
