@@ -281,6 +281,7 @@ namespace Simple.AMT
                 OnMessage?.Invoke(central, messageEventArgs);
             }
             catch (Exception ex) { OnError?.Invoke(this, ex); }
+            await Task.CompletedTask;
         }
         // AsyncVoid, do not wait
         private async void sendEvent(ListenerModels.CentralInformation central, ListenerModels.EventInformation eventInfoArgs)
@@ -293,6 +294,7 @@ namespace Simple.AMT
                 OnEvent?.Invoke(central, eventInfoArgs);
             }
             catch (Exception ex) { OnError?.Invoke(this, ex); }
+            await Task.CompletedTask;
         }
 
         private static async Task sendAckAsync(NetworkStream stream)
