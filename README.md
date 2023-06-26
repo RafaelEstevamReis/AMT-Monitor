@@ -48,6 +48,56 @@ This command will launch the application and connect to the central server using
 
 Please note that only the `--cli` command is available in the command-line interface mode, while the other commands can be used in both CLI and listen modes.
 
+## Using with Docker
+
+Using this project inside a docker container
+
+1. Save this Dockerfile to a directory:
+
+```Dockerfile
+# Dockerfile
+
+# Base image with .NET SDK 6.0
+FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build-env
+
+# Set the working directory
+WORKDIR /app
+
+# Clone this repository
+RUN git clone https://github.com/RafaelEstevamReis/AMT-Monitor.git
+
+# Change directory to the cloned repository
+WORKDIR /app/AMT-Monitor
+
+# Build the project
+RUN dotnet build -c Release
+
+# Run the project
+CMD ["dotnet", "run", "--project", "AMT.App/AMT.App.csproj"]
+```
+
+2. Build the Docker image using the following command:
+```
+docker build -t amt-monitor .
+```
+3. After the image is successfully built, you can run a container based on the image:
+```
+docker run -it amt-monitor [execution arguments]
+```
+
+Replace `[execution arguments]` with the desired arguments such as `--cli`, `--ip`, or any other applicable arguments based on the project's command-line options.
+
+Note that:
+1. You have to provide all needed parameters:
+* IP
+* Password
+
+And may need to provide
+* Port
+
+2. This must run from the same network as the AMT, cloud access is not supported
+
+
 ## Contributing
 
 We welcome contributions to the Intelbras AMT Monitor project! However, it's important to note that none of Intelbras' intellectual property (IP), including their proprietary code, algorithms, or documentation, should be used or included in any contributions.
