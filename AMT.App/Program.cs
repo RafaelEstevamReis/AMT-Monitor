@@ -1,13 +1,40 @@
 ﻿using Simple.AMT;
 using System.Text.Json;
 
-Console.WriteLine("START");
+int port = 9009;
+bool listen;
 
-bool listen = false;
-
-if(listen)
+while (true)
 {
-    var cnn = new Listener(9009);
+    Console.Clear();
+    Console.WriteLine("Select option:");
+    Console.WriteLine("1. Listen Mode - IP monitoring");
+    Console.WriteLine("2. Active mode - Connects to central");
+    Console.Write("> ");
+    string response = Console.ReadLine() ?? "";
+
+    if (!int.TryParse(response, out int result)) continue;
+
+    if (result == 1)
+    {
+        listen = true;
+        break;
+    }
+    if (result == 2)
+    {
+        listen = false;
+        break;
+    }
+}
+
+
+if (listen)
+{
+    Console.Clear();
+    Console.WriteLine($"Monitor Mode started on port {port}");
+    Console.WriteLine("Configure central ip monitoring to this host");
+
+    var cnn = new Listener(port);
     cnn.OnEvent += Cnn_OnEvent;
     cnn.OnMessage += (s, m) => Console.WriteLine($"{DateTime.Now} {m}");
 
@@ -15,14 +42,30 @@ if(listen)
 }
 else // Connect
 {
+    Console.Clear();
+
+    Console.WriteLine("Active connection mode");
+    Console.Write("Central IP: ");
+    string ip = Console.ReadLine() ?? "";
+    Console.WriteLine();
+
+    Console.Write("Central Password: ");
+    string passwd = Console.ReadLine() ?? "";
+    Console.WriteLine();
+
+    Console.WriteLine("Connecting...");
     AMT8000 amt = new AMT8000(new Simple.AMT.AMTModels.ConnectionInfo()
     {
-        IP = "192.168.1.0",
-        Port = 9876,
-        Password = "123456",
+        IP = ip,
+        Port = port,
+        Password = passwd,
     });
     await amt.ConnectAsync();
 
+    Console.Clear();
+    Console.WriteLine("Connected to CENTRAL");
+    var centralInfo = await amt.GetCentralStatusAsync();
+    var sensorNames = await amt.GetZonesNamesAsync();
 
 
     var types = await amt.GetZoneTypesAsync();
