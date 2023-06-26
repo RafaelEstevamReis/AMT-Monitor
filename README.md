@@ -1,5 +1,7 @@
 # Intelbras AMT Monitor
 
+[![NuGet](https://buildstats.info/nuget/Simple.AMT)](https://www.nuget.org/packages/Simple.AMT)
+
 [EN]
 
 This project started as a study of the communication protocol used by the Intelbras AMT-8000 alarm system, which lacks proper documentation.
