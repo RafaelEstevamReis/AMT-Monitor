@@ -106,7 +106,12 @@ namespace Simple.AMT
         {
             await sendPacketAsync(stream, toSend);
             var bytesReceived = await receiveBytesAsync(stream);
+            if (bytesReceived.Length == 9 && bytesReceived[8] == 31)
+            {
+                throw new Exception("Invalid password");
+            }
             var receivedPacket = Activator.CreateInstance<T>();
+
             receivedPacket.Unpack(bytesReceived);
 
             if (receivedPacket.Header[6] != toSend.Header[6]
