@@ -1,38 +1,40 @@
-﻿using Simple.AMT;
+﻿using AMT.App;
+using Simple.AMT;
+using System;
 using System.Text.Json;
 
+bool cliMode = false;
+bool listenMode = false;
+string ip = "";
 int port = 9009;
-bool listen;
+string pwd = "";
 
-while (true)
+var argParser = Simple.BotUtils.Startup.ArgumentParser.Parse(args);
+
+if (argParser.ContainsKey("--help") || argParser.ContainsKey("/h"))
 {
-    Console.Clear();
-    Console.WriteLine("Select option:");
-    Console.WriteLine("1. Listen Mode - IP monitoring");
-    Console.WriteLine("2. Active mode - Connects to central");
-    Console.Write("> ");
-    string response = Console.ReadLine() ?? "";
-
-    if (!int.TryParse(response, out int result)) continue;
-
-    if (result == 1)
-    {
-        listen = true;
-        break;
-    }
-    if (result == 2)
-    {
-        listen = false;
-        break;
-    }
+    Console.WriteLine("Commands: ");
+    Console.WriteLine("--help | /h: show this help");
+    Console.WriteLine("--cli: start cli mode");
+    Console.WriteLine("--listen: listen mode");
+    Console.WriteLine("--ip: defines central ip");
+    Console.WriteLine("--port: defines central port");
+    Console.WriteLine("--pwd: defines central password");
+    Console.WriteLine("--max-sensors: [cli only] max sensors to display");
+    return;
 }
 
+if (argParser.ContainsKey("--cli")) cliMode = true;
+if (argParser.ContainsKey("--listen")) listenMode = true;
+ip = argParser.Get("--ip");
+pwd = argParser.Get("--pwd");
+if(ushort.TryParse(argParser.Get("--port"), out ushort usp)) port = usp;
 
-if (listen)
+if (listenMode)
 {
     Console.Clear();
-    Console.WriteLine($"Monitor Mode started on port {port}");
     Console.WriteLine("Configure central ip monitoring to this host");
+    Console.WriteLine($"Monitor Mode started on port {port}");
 
     var cnn = new Listener(port);
     cnn.OnEvent += Cnn_OnEvent;
@@ -42,51 +44,25 @@ if (listen)
 }
 else // Connect
 {
-    Console.Clear();
-
     Console.WriteLine("Active connection mode");
-    Console.Write("Central IP: ");
-    string ip = Console.ReadLine() ?? "";
-    Console.WriteLine();
-
-    Console.Write("Central Password: ");
-    string passwd = Console.ReadLine() ?? "";
-    Console.WriteLine();
-
-    Console.WriteLine("Connecting...");
-    AMT8000 amt = new AMT8000(new Simple.AMT.AMTModels.ConnectionInfo()
+    if (string.IsNullOrEmpty(ip))
     {
-        IP = ip,
-        Port = port,
-        Password = passwd,
-    });
-    await amt.ConnectAsync();
-
-    Console.Clear();
-    Console.WriteLine("Connected to CENTRAL");
-    var centralInfo = await amt.GetCentralStatusAsync();
-    var sensorNames = await amt.GetZonesNamesAsync();
-
-
-    var types = await amt.GetZoneTypesAsync();
-
-    var status = await amt.GetCentralStatusAsync();
-    var sensors = await amt.GetSensorConfigurationAsync();
-
-    var zones = await amt.GetZonesNamesAsync();
-    var users = await amt.GetUserNamesAsync();
-
-    var events = await amt.GetEventsAsync();
-    while (true)
+        Console.Write("Central IP: ");
+        ip = Console.ReadLine() ?? "";
+    }
+    if (string.IsNullOrEmpty(pwd))
     {
-        Thread.Sleep(1000);
-        Console.Clear();
-        var oppenedZones = await amt.GetOpenedZonesAsync();
+        Console.Write("Central Password: ");
+        pwd = Console.ReadLine() ?? "";
+    }
 
-        for (int i = 0; i < 16; i++)
-        {
-            Console.WriteLine($"[{i + 1:00}] {zones[i].Name.PadRight(16)} {(oppenedZones[i] ? "OPEN " : "CLOSE")} {(status.Zones[i].ByPass ? "[BP]" : "  ")}");
-        }
+    if (cliMode)
+    {
+        await UI_CliMode.StartUIAsync(ip, port, pwd, argParser);
+    }
+    else
+    {
+        await UI_InteractiveMode.StartUIAsync(ip, port, pwd);
     }
 }
 

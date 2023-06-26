@@ -11,7 +11,6 @@ namespace Simple.AMT.AMTPackets
             Armed = 2
         }
 
-
         public string Firmware { get; set; }
         public bool IsEth { get; set; }
         public bool IsWifi { get; set; }
