@@ -22,6 +22,29 @@ else // Connect
         Password = "123456",
     });
     await amt.ConnectAsync();
+
+
+
+    var types = await amt.GetZoneTypesAsync();
+
+    var status = await amt.GetCentralStatusAsync();
+    var sensors = await amt.GetSensorConfigurationAsync();
+
+    var zones = await amt.GetZonesNamesAsync();
+    var users = await amt.GetUserNamesAsync();
+
+    var events = await amt.GetEventsAsync();
+    while (true)
+    {
+        Thread.Sleep(1000);
+        Console.Clear();
+        var oppenedZones = await amt.GetOpenedZonesAsync();
+
+        for (int i = 0; i < 16; i++)
+        {
+            Console.WriteLine($"[{i + 1:00}] {zones[i].Name.PadRight(16)} {(oppenedZones[i] ? "OPEN " : "CLOSE")} {(status.Zones[i].ByPass ? "[BP]" : "  ")}");
+        }
+    }
 }
 
 void Cnn_OnEvent(object? sender, Simple.AMT.ListenerModels.EventInformation e)
