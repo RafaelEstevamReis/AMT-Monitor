@@ -25,7 +25,7 @@ namespace Simple.AMT
         /// Initailizes the monitor for OppenedZones
         /// </summary>
         public void Setup()
-            => Setup(checkForOppenedZones, false, false);
+            => Setup(true, false, false);
         /// <summary>
         /// Initailizes the monitor
         /// </summary>

@@ -4,6 +4,7 @@ using System;
 using System.Text.Json;
 
 bool cliMode = false;
+bool jsonMode = false;
 bool listenMode = false;
 string ip = "";
 int port = 9009;
@@ -14,17 +15,29 @@ var argParser = Simple.BotUtils.Startup.ArgumentParser.Parse(args);
 if (argParser.ContainsKey("--help") || argParser.ContainsKey("/h"))
 {
     Console.WriteLine("Commands: ");
-    Console.WriteLine("--help | /h: show this help");
-    Console.WriteLine("--cli: start cli mode");
-    Console.WriteLine("--listen: listen mode");
-    Console.WriteLine("--ip: defines central ip");
-    Console.WriteLine("--port: defines central port");
-    Console.WriteLine("--pwd: defines central password");
-    Console.WriteLine("--max-sensors: [cli only] max sensors to display");
+    Console.WriteLine(" --help | /h: show this help");
+    Console.WriteLine(" --ip: defines central ip");
+    Console.WriteLine(" --port: defines central port");
+    Console.WriteLine(" --pwd: defines central password");
+    Console.WriteLine(" --listen: listen mode");
+    Console.WriteLine("Cli interface");
+    Console.WriteLine(" --cli: start cli mode");
+    Console.WriteLine(" --max-sensors: [cli only] max sensors to display");
+    Console.WriteLine(" --continuous: [cli only] continuously fech data");
+    Console.WriteLine(" --contral-info: [cli only] continuously fech data");
+    Console.WriteLine(" --update: [cli only] continuously update with new sensor oppened states");
+    Console.WriteLine("Json output");
+    Console.WriteLine(" --json: json output mode");
+    Console.WriteLine(" --contral-info: [json] fetch central data");
+    Console.WriteLine(" --sensors-info: [json] fetch sensors info");
+    Console.WriteLine(" --sensors: [json] fetch sensors states");
+    Console.WriteLine(" --users: [json] fetch sensors states");
+
     return;
 }
 
 if (argParser.ContainsKey("--cli")) cliMode = true;
+if (argParser.ContainsKey("--json")) jsonMode = true;
 if (argParser.ContainsKey("--listen")) listenMode = true;
 ip = argParser.Get("--ip");
 pwd = argParser.Get("--pwd");
@@ -44,7 +57,7 @@ if (listenMode)
 }
 else // Connect
 {
-    Console.WriteLine("Active connection mode");
+    if(!jsonMode) Console.WriteLine("Active connection mode");
     if (string.IsNullOrEmpty(ip))
     {
         Console.Write("Central IP: ");
@@ -59,6 +72,12 @@ else // Connect
     if (cliMode)
     {
         await UI_CliMode.StartUIAsync(ip, port, pwd, argParser);
+    }
+    else if(jsonMode)
+    {
+        var obj = await UI_JsonMode.StartUIAsync(ip, port, pwd, argParser);
+        var json = Newtonsoft.Json.JsonConvert.SerializeObject(obj);
+        Console.Write(json);
     }
     else
     {

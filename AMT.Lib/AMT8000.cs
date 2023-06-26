@@ -77,7 +77,7 @@ namespace Simple.AMT
             }
             return names.Where(n => n != null).ToArray();
         }
-        public async Task<ZoneTypes.ZoneType[]> GetZoneTypesAsync()
+        public async Task<ZoneTypes.ZoneType[]> GetZonesTypesAsync()
         {
             var result = await sendReceiveAsync<ZoneTypes>(ZoneTypes.Request());
 
