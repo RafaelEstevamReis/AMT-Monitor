@@ -100,7 +100,7 @@ And may need to provide
 
 ## Contributing
 
-We welcome contributions to the Intelbras AMT Monitor project! However, it's important to note that none of Intelbras' intellectual property (IP), including their proprietary code, algorithms, or documentation, should be used or included in any contributions.
+We welcome contributions to the project! However, it's important to note that none of Intelbras' intellectual property (IP), including their proprietary code, algorithms, or documentation, should be used or included in any contributions.
 
 Please adhere to the following guidelines when making contributions:
 
@@ -112,6 +112,6 @@ Please adhere to the following guidelines when making contributions:
 
 Please be aware that contributions that violate these guidelines, including those that contain any Intelbras IP, will not be accepted. If, by any chance, such contributions are mistakenly accepted, they will be promptly identified and removed from the project. We genuinely appreciate your understanding and cooperation in assisting us in maintaining a compliant and respectful project environment.
 
-Additionally, we want to emphasize that individuals who have signed any non-disclosure agreements (NDAs) with Intelbras or have had access to Intelbras software development kits (SDKs) are not permitted to contribute to this project. We must respect legal obligations and protect intellectual property rights. If you fall into this category, we kindly request that you refrain from making contributions to the Intelbras AMT Monitor project. Thank you for your understanding and adherence to this policy.
+Additionally, we want to emphasize that individuals who have signed any non-disclosure agreements (NDAs) with Intelbras or have had access to Intelbras software development kits (SDKs) are not permitted to contribute to this project's library. We must respect legal obligations and protect intellectual property rights. If you fall into this category, we kindly request that you refrain from making this contributions. Thank you for your understanding and adherence to this policy.
 
-If you have any questions or need further clarification, please reach out to the project maintainers. Thank you for your interest in contributing to the Intelbras AMT Monitor project!
+If you have any questions or need further clarification, please reach out to the project maintainers. Thank you for your interest in contributing to the project!
