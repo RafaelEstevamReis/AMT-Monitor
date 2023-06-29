@@ -7,6 +7,10 @@ namespace Simple.AMT.AMTPackets
         // Based on captured data with Wireshark
         public enum Commands : ushort
         {
+            KEEP_ALIVE = 0xF0F7, // Sent every 10s
+            KEEP_ACK = 0xF0FE,
+            KEEP_NACK = 0xF0FD,
+
             CONNECT_PASSWORD = 0xF0F0,
             CENTRAL_STATUS = 0x0B4A,
             USER_NAMES = 0x32E0,

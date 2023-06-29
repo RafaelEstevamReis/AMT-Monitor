@@ -35,6 +35,11 @@ namespace Simple.AMT
 
             return true;
         }
+        public async Task<bool> KeepAliveAsync()
+        {
+            var ka = await sendReceiveAsync<KeepAlive>(KeepAlive.Request());
+            return ka.Result;
+        }
 
         public async Task<CentralStatus> GetCentralStatusAsync()
         {
