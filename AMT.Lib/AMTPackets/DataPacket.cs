@@ -12,14 +12,18 @@ namespace Simple.AMT.AMTPackets
             KEEP_NACK = 0xF0FD,
 
             CONNECT_PASSWORD = 0xF0F0,
+            DISCONNECT = 0xF0F1,
             CENTRAL_STATUS = 0x0B4A,
+            READ_MAC = 0x3FAA,
+            CHECK_FIRMWRE_UPDATE = 0x4994,
+            CHECK_FIRMWRE_UPDATE_VERSION = 0x5994,
+
             USER_NAMES = 0x32E0,
             ZONE_TYPES = 0x33A0,
             ZONE_NAMES = 0x33E0,
             ZONE_CONFIGURATION = 0x3660,
             EVENT_POINTER = 0x3003,
             EVENT_LOG = 0x3900,
-            READ_MAC = 0x3FAA,
 
             OPENED_ZONES = 0x0B11,
             TRIGGERED_ZONES = 0x0B12,
