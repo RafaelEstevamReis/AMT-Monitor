@@ -103,7 +103,7 @@ namespace Simple.AMT.AMTPackets
                 hour: hexToDec(Data[67]),
                 minute: hexToDec(Data[68]),
                 second: hexToDec(Data[69]));
-            BatteryLevel = Data[134];
+            BatteryLevel = (BatteryLevel)Data[134];
 
             int idxOpen = 38;
             int idxTrigger = 46;

@@ -98,6 +98,12 @@ namespace Simple.AMT
             var result = await sendReceiveAsync<ZoneStatus>(ZoneStatus.Request_Triggered());
             return result.SensorsValue;
         }
+        public async Task<string> GetMacAsync()
+        {
+            var result = await sendReceiveAsync<ReadMac>(ReadMac.Request());
+            return result.MAC;
+        }
+
 
         private async Task<T> sendReceiveAsync<T>(DataPacket toSend) where T : DataPacket
             => await sendReceiveAsync<T>(tcpClient.GetStream(), toSend);
@@ -153,8 +159,6 @@ namespace Simple.AMT
             catch { }
             return packet;
         }
-
-
 
     }
 }

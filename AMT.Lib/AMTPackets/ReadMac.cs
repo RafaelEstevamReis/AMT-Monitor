@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Simple.AMT.AMTPackets
 {
@@ -16,10 +14,7 @@ namespace Simple.AMT.AMTPackets
         {
             base.Unpack(receivedBytes);
 
-            for (int i = 0; i < 6; i++)
-            {
-                
-            }
+            MAC = BitConverter.ToString(Data, 1, 6).Replace('-', ':');
         }
     }
 }
