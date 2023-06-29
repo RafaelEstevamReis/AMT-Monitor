@@ -3,14 +3,22 @@ using System.Collections.Generic;
 
 namespace Simple.AMT.AMTPackets
 {
+    public enum BatteryLevel : byte
+    {
+        UNKOWN = 0,
+        NoBattery = 1,
+        LowBattery = 2,
+        MidBattery = 3,
+        FullBattery = 4,
+    }
+    public enum StatusType
+    {
+        Disarmed = 0,
+        Armed = 2
+    }
+
     public class CentralStatus : DataPacket
     {
-        public enum StatusType
-        {
-            Disarmed = 0,
-            Armed = 2
-        }
-
         public string Firmware { get; set; }
         public bool IsEth { get; set; }
         public bool IsWifi { get; set; }
@@ -23,7 +31,7 @@ namespace Simple.AMT.AMTPackets
         public bool AnyZoneByPassed { get; set; }
         public bool StayMode { get; set; }
         public int Status { get; set; }
-        public byte BatteryLevel { get; set; } // After some hours without power, battery level is 4
+        public BatteryLevel BatteryLevel { get; set; }
 
         public DateTime CentralDateTime { get; set; }
         public DateTime PacketBuiltTime { get; set; }
@@ -100,7 +108,7 @@ namespace Simple.AMT.AMTPackets
             int idxOpen = 38;
             int idxTrigger = 46;
             int idxByPass = 54;
-            List<ZoneInfo> lstZones = new List<ZoneInfo>();            
+            List<ZoneInfo> lstZones = new List<ZoneInfo>();
             for (int block = 0; block < 8; block++) // 8 byte-blocks
             {
                 var bytesOpen = Data[idxOpen++];
@@ -114,7 +122,7 @@ namespace Simple.AMT.AMTPackets
                         Open = IsBit(bytesOpen, i),
                         Trigger = IsBit(bytesTrigger, i),
                         ByPass = IsBit(bytesBypass, i),
-                    }) ;
+                    });
                 }
             }
             Zones = lstZones.ToArray();
