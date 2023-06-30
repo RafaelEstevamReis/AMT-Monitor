@@ -6,6 +6,7 @@ using System.Text.Json;
 bool cliMode = false;
 bool jsonMode = false;
 bool listenMode = false;
+bool proxyMode = false;
 string ip = "";
 int port = 9009;
 string pwd = "";
@@ -32,6 +33,9 @@ if (argParser.ContainsKey("--help") || argParser.ContainsKey("/h"))
     Console.WriteLine(" --sensors-info: [json] fetch sensors info");
     Console.WriteLine(" --sensors: [json] fetch sensors states");
     Console.WriteLine(" --users: [json] fetch sensors states");
+    Console.WriteLine("Proxy Mode");
+    Console.WriteLine(" Intercepts a connection and dumps all traffic");
+    Console.WriteLine(" --proxy: enters proxy mode");
 
     return;
 }
@@ -39,9 +43,10 @@ if (argParser.ContainsKey("--help") || argParser.ContainsKey("/h"))
 if (argParser.ContainsKey("--cli")) cliMode = true;
 if (argParser.ContainsKey("--json")) jsonMode = true;
 if (argParser.ContainsKey("--listen")) listenMode = true;
+if (argParser.ContainsKey("--proxy")) proxyMode = true;
 ip = argParser.Get("--ip");
 pwd = argParser.Get("--pwd");
-if(ushort.TryParse(argParser.Get("--port"), out ushort usp)) port = usp;
+if (ushort.TryParse(argParser.Get("--port"), out ushort usp)) port = usp;
 
 if (listenMode)
 {
@@ -57,7 +62,7 @@ if (listenMode)
 }
 else // Connect
 {
-    if(!jsonMode) Console.WriteLine("Active connection mode");
+    if (!jsonMode) Console.WriteLine("Active connection mode");
     if (string.IsNullOrEmpty(ip))
     {
         Console.Write("Central IP: ");
@@ -73,11 +78,15 @@ else // Connect
     {
         await UI_CliMode.StartUIAsync(ip, port, pwd, argParser);
     }
-    else if(jsonMode)
+    else if (jsonMode)
     {
         var obj = await UI_JsonMode.StartUIAsync(ip, port, pwd, argParser);
         var json = Newtonsoft.Json.JsonConvert.SerializeObject(obj);
         Console.Write(json);
+    }
+    else if (proxyMode)
+    {
+        UI_Proxy.StartUI(ip, port, argParser);
     }
     else
     {

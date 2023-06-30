@@ -1,7 +1,6 @@
 ﻿namespace AMT.App;
+
 using Simple.AMT;
-using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 internal class UI_JsonMode
