@@ -38,6 +38,13 @@ internal class UI_JsonMode
             var users = await amt.GetUserNamesAsync();
             return users;
         }
+        if (argParser.Has("--connections"))
+        {
+            var cnn = await amt.GetConnectionsAsync();
+            cnn.Data = null;
+            cnn.Header = null;
+            return cnn;
+        }
         return new { };
     }
 }

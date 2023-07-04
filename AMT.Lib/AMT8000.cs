@@ -108,7 +108,11 @@ namespace Simple.AMT
             var result = await sendReceiveAsync<ReadMac>(ReadMac.Request());
             return result.MAC;
         }
-
+        public async Task<ConnectionsStatus> GetConnectionsAsync()
+        {
+            var result = await sendReceiveAsync<ConnectionsStatus>(ConnectionsStatus.Request());
+            return result;
+        }
 
         private async Task<T> sendReceiveAsync<T>(DataPacket toSend) where T : DataPacket
             => await sendReceiveAsync<T>(tcpClient.GetStream(), toSend);
