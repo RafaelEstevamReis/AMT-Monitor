@@ -30,7 +30,8 @@ if (argParser.ContainsKey("--help") || argParser.ContainsKey("/h"))
     Console.WriteLine("Json output");
     Console.WriteLine(" --json: json output mode");
     Console.WriteLine(" --contral-info: [json only] fetch central data");
-    Console.WriteLine(" --sensors-info: [json only] fetch sensors info");
+    Console.WriteLine(" --zone-names: [json only] fetch zone names");
+    Console.WriteLine(" --zone-types: [json only] fetch zone types");
     Console.WriteLine(" --sensors: [json only] fetch sensors states");
     Console.WriteLine(" --users: [json only] fetch sensors states");
     Console.WriteLine(" --connections: [json only] fetch connections states");

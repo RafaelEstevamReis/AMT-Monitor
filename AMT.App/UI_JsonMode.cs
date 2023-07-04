@@ -23,10 +23,15 @@ internal class UI_JsonMode
 
             return centralInfo;
         }
-        if (argParser.Has("--sensors-info"))
+        if (argParser.Has("--zone-names"))
         {
             var names = await amt.GetZonesNamesAsync();
             return names;
+        }
+        if (argParser.Has("--zone-types"))
+        {
+            var types = await amt.GetZonesTypesAsync();
+            return types;
         }
         if (argParser.Has("--sensors"))
         {
