@@ -29,10 +29,11 @@ if (argParser.ContainsKey("--help") || argParser.ContainsKey("/h"))
     Console.WriteLine(" --update: [cli only] continuously update with new sensor oppened states");
     Console.WriteLine("Json output");
     Console.WriteLine(" --json: json output mode");
-    Console.WriteLine(" --contral-info: [json] fetch central data");
-    Console.WriteLine(" --sensors-info: [json] fetch sensors info");
-    Console.WriteLine(" --sensors: [json] fetch sensors states");
-    Console.WriteLine(" --users: [json] fetch sensors states");
+    Console.WriteLine(" --contral-info: [json only] fetch central data");
+    Console.WriteLine(" --sensors-info: [json only] fetch sensors info");
+    Console.WriteLine(" --sensors: [json only] fetch sensors states");
+    Console.WriteLine(" --users: [json only] fetch sensors states");
+    Console.WriteLine(" --connections: [json only] fetch connections states");
     Console.WriteLine("Proxy Mode");
     Console.WriteLine(" Intercepts a connection and dumps all traffic");
     Console.WriteLine(" --proxy: enters proxy mode");
@@ -68,10 +69,13 @@ else // Connect
         Console.Write("Central IP: ");
         ip = Console.ReadLine() ?? "";
     }
-    if (string.IsNullOrEmpty(pwd))
+    if (!proxyMode)
     {
-        Console.Write("Central Password: ");
-        pwd = Console.ReadLine() ?? "";
+        if (string.IsNullOrEmpty(pwd))
+        {
+            Console.Write("Central Password: ");
+            pwd = Console.ReadLine() ?? "";
+        }
     }
 
     if (cliMode)
