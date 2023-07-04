@@ -2,6 +2,24 @@
 {
     public class SensorConfiguration : DataPacket
     {
+        public enum SensitivityMode : byte
+        {
+            MINIMAL = 0,
+            DEFAULT = 1,
+            MEDIUM = 2,
+            MAXIMUM = 3,
+        }
+        public enum LedMode : byte
+        {
+            ALWAYS = 0,
+            TRIGGER = 1,
+        }
+        public enum OperationMode : byte
+        {
+            ECONOMY = 0,
+            CONTINUOUS = 1,
+        }
+
         public Sensor[] Sensors { get; set; }
 
         public static DataPacket Request()
@@ -20,9 +38,9 @@
                 Sensors[i] = new Sensor()
                 {
                     Id = (byte)(i + 1),
-                    Sensitivity = Data[offset++],
-                    LedMode = Data[offset++],
-                    OperationMode = Data[offset++],
+                    Sensitivity = (SensitivityMode)Data[offset++],
+                    LedMode = (LedMode)Data[offset++],
+                    OperationMode = (OperationMode)Data[offset++],
                 };
             }
         }
@@ -30,9 +48,9 @@
         public class Sensor
         {
             public byte Id { get; set; }
-            public byte Sensitivity { get; set; }
-            public byte LedMode { get; set; }
-            public byte OperationMode { get; set; }
+            public SensitivityMode Sensitivity { get; set; }
+            public LedMode LedMode { get; set; }
+            public OperationMode OperationMode { get; set; }
             public override string ToString()
             {
                 return $"Id: {Id} Sensitivity: {Sensitivity} LedMode: {LedMode} OperationMode: {OperationMode}";
