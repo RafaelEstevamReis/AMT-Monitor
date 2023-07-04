@@ -14,9 +14,13 @@ namespace Simple.AMT.AMTPackets
             CONNECT_PASSWORD = 0xF0F0,
             DISCONNECT = 0xF0F1,
             CENTRAL_STATUS = 0x0B4A,
-            READ_MAC = 0x3FAA,
-            CHECK_FIRMWRE_UPDATE = 0x4994,
-            CHECK_FIRMWRE_UPDATE_VERSION = 0x5994,
+            GET_MAC = 0x3FAA,
+            GET_WEEK_DAY = 0x34A2,
+            GET_FIRMWRE_UPDATE = 0x4994,
+            GET_FIRMWRE_UPDATE_VERSION = 0x5994,
+
+            UPDATE_DATE = 0x24A1,
+            UPDATE_TIME = 0x24AA,
 
             USER_NAMES = 0x32E0,
             ZONE_TYPES = 0x33A0,
@@ -24,11 +28,15 @@ namespace Simple.AMT.AMTPackets
             ZONE_CONFIGURATION = 0x3660,
             EVENT_POINTER = 0x3003,
             EVENT_LOG = 0x3900,
+            CONNECTIONS_STATUS = 0x0B71,
 
             OPENED_ZONES = 0x0B11,
             TRIGGERED_ZONES = 0x0B12,
             BYPASSED_ZONES = 0x0B13,
+            GPRS_SIGNAL_LEVEL = 0x0B72,
             DEVICE_SIGNAL_LEVEL = 0x0B73,
+            DEVICE_SENSOR_TYPE = 0x0B74,
+            DEVICE_VERSION = 0x0B76,
         }
 
         public byte[] Header { get; set; }

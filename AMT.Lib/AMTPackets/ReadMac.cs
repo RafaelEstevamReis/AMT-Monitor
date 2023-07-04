@@ -8,7 +8,7 @@ namespace Simple.AMT.AMTPackets
 
         public static DataPacket Request()
         {
-            return BuildPacket(Commands.READ_MAC, 0x00);
+            return BuildPacket(Commands.GET_MAC, 0x00);
         }
         public override void Unpack(byte[] receivedBytes)
         {
