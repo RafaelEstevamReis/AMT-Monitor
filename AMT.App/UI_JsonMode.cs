@@ -23,6 +23,11 @@ internal class UI_JsonMode
 
             return centralInfo;
         }
+        if (argParser.Has("--contral-mac"))
+        {
+            var mac = await amt.GetMacAsync();
+            return mac;
+        }
         if (argParser.Has("--zone-names"))
         {
             var names = await amt.GetZonesNamesAsync();
@@ -32,6 +37,11 @@ internal class UI_JsonMode
         {
             var types = await amt.GetZonesTypesAsync();
             return types;
+        }
+        if (argParser.Has("--sensors-config"))
+        {
+            var sensors = await amt.GetSensorConfigurationAsync();
+            return sensors;
         }
         if (argParser.Has("--sensors"))
         {
@@ -49,6 +59,11 @@ internal class UI_JsonMode
             cnn.Data = null;
             cnn.Header = null;
             return cnn;
+        }
+        if (argParser.Has("--events"))
+        {
+            var events = await amt.GetEventsAsync();
+            return events;
         }
         return new { };
     }
