@@ -1,20 +1,19 @@
-﻿using System;
+﻿namespace Simple.AMT.AMTPackets;
 
-namespace Simple.AMT.AMTPackets
+using System;
+
+public class ReadMac : DataPacket
 {
-    public class ReadMac : DataPacket
+    public string MAC { get; set; }
+
+    public static DataPacket Request()
     {
-        public string MAC { get; set; }
+        return BuildPacket(Commands.GET_MAC, 0x00);
+    }
+    public override void Unpack(byte[] receivedBytes)
+    {
+        base.Unpack(receivedBytes);
 
-        public static DataPacket Request()
-        {
-            return BuildPacket(Commands.GET_MAC, 0x00);
-        }
-        public override void Unpack(byte[] receivedBytes)
-        {
-            base.Unpack(receivedBytes);
-
-            MAC = BitConverter.ToString(Data, 1, 6).Replace('-', ':');
-        }
+        MAC = BitConverter.ToString(Data, 1, 6).Replace('-', ':');
     }
 }

@@ -1,35 +1,34 @@
-﻿namespace Simple.AMT.AMTPackets
+﻿namespace Simple.AMT.AMTPackets;
+
+public class DeviceSignalLevel : DataPacket
 {
-    public class DeviceSignalLevel : DataPacket
+    public enum DeviceId : byte
     {
-        public enum DeviceId : byte
-        {
-            Controller = 0,
-            Sensor = 1,
-            PGM = 6,
-            Keyboard = 9,
-            Siren = 10,
-            Repeater = 11,
-        }
+        Controller = 0,
+        Sensor = 1,
+        PGM = 6,
+        Keyboard = 9,
+        Siren = 10,
+        Repeater = 11,
+    }
 
-        public static DataPacket Request(DeviceId id, byte index)
+    public static DataPacket Request(DeviceId id, byte index)
+    {
+        if (id == DeviceId.Sensor)
         {
-            if (id == DeviceId.Sensor)
-            {
-                return BuildPacket(Commands.DEVICE_SIGNAL_LEVEL, index);
-            }
-            else
-            {
-                byte deviceId = (byte)id;
-                return BuildPacket(Commands.DEVICE_SIGNAL_LEVEL, deviceId, index);
-            }
+            return BuildPacket(Commands.DEVICE_SIGNAL_LEVEL, index);
         }
-
-        public override void Unpack(byte[] receivedBytes)
+        else
         {
-            base.Unpack(receivedBytes);
-
-            receivedBytes = receivedBytes;
+            byte deviceId = (byte)id;
+            return BuildPacket(Commands.DEVICE_SIGNAL_LEVEL, deviceId, index);
         }
+    }
+
+    public override void Unpack(byte[] receivedBytes)
+    {
+        base.Unpack(receivedBytes);
+
+        receivedBytes = receivedBytes;
     }
 }
