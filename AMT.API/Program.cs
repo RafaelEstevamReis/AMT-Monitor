@@ -6,6 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddHostedService<AMT.API.Workers.CentralKeepAlive>();
 builder.Services.AddSwaggerGen();
 
 var central = new Simple.AMT.AMT8000(new Simple.AMT.AMTModels.ConnectionInfo
