@@ -25,12 +25,12 @@ if (argParser.ContainsKey("--help") || argParser.ContainsKey("/h"))
     Console.WriteLine(" --cli: start cli mode");
     Console.WriteLine(" --max-sensors: [cli only] max sensors to display");
     Console.WriteLine(" --continuous: [cli only] continuously fech data");
-    Console.WriteLine(" --contral-info: [cli only] continuously fech data");
+    Console.WriteLine(" --central-info: [cli only] fech central data");
     Console.WriteLine(" --update: [cli only] continuously update with new sensor oppened states");
     Console.WriteLine("Json output");
     Console.WriteLine(" --json: json output mode");
-    Console.WriteLine(" --contral-info: [json only] fetch central data");
-    Console.WriteLine(" --contral-mac: [json only] fetch central mac");
+    Console.WriteLine(" --central-info: [json only] fetch central data");
+    Console.WriteLine(" --central-mac: [json only] fetch central mac");
     Console.WriteLine(" --zone-names: [json only] fetch zone names");
     Console.WriteLine(" --zone-types: [json only] fetch zone types");
     Console.WriteLine(" --sensors-config: [json only] fetch sensors configuration");

@@ -36,7 +36,7 @@ internal static class UI_CliMode
     {
         var centralInfo = await amt.GetCentralStatusAsync();
 
-        if (argParser.Has("--contral-info"))
+        if (argParser.Has("--central-info"))
         {
             Console.WriteLine($"Central Information:");
             Console.WriteLine($" DateTime: {centralInfo.CentralDateTime:g}");

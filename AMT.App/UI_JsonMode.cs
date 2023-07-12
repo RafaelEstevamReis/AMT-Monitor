@@ -15,7 +15,7 @@ internal class UI_JsonMode
         });
         await amt.ConnectAsync();
 
-        if (argParser.Has("--contral-info"))
+        if (argParser.Has("--central-info"))
         {
             var centralInfo = await amt.GetCentralStatusAsync();
             centralInfo.Data = null;
@@ -23,7 +23,7 @@ internal class UI_JsonMode
 
             return centralInfo;
         }
-        if (argParser.Has("--contral-mac"))
+        if (argParser.Has("--central-mac"))
         {
             var mac = await amt.GetMacAsync();
             return mac;
