@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AMT.App", "AMT.App\AMT.App.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Simple.AMT", "AMT.Lib\Simple.AMT.csproj", "{5CC679E1-FA3A-4796-A98A-750A237EA66E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AMT.API", "AMT.API\AMT.API.csproj", "{D006BD59-C46C-4641-A6A8-F240227BA9AF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{5CC679E1-FA3A-4796-A98A-750A237EA66E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5CC679E1-FA3A-4796-A98A-750A237EA66E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5CC679E1-FA3A-4796-A98A-750A237EA66E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D006BD59-C46C-4641-A6A8-F240227BA9AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D006BD59-C46C-4641-A6A8-F240227BA9AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D006BD59-C46C-4641-A6A8-F240227BA9AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D006BD59-C46C-4641-A6A8-F240227BA9AF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
