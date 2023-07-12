@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Security.Cryptography;
-using System.Text;
-
-namespace Simple.AMT.AMTPackets
+﻿namespace Simple.AMT.AMTPackets
 {
     public class DeviceSignalLevel : DataPacket
     {
