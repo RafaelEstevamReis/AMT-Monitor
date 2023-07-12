@@ -18,10 +18,10 @@ namespace AMT.API.Controllers
         }
 
         [HttpGet]
+        [Route("IsConnected")]
         public ActionResult IsConnected()
         {
             return Ok(central.IsConnected);
         }
-
     }
 }
