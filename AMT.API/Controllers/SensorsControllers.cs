@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Simple.AMT;
+using System.Threading.Tasks;
 
 namespace AMT.API.Controllers
 {
@@ -18,5 +19,12 @@ namespace AMT.API.Controllers
         }
 
 
+        [HttpGet]
+        [Route("GetSensorConfiguration")]
+        public async Task<ActionResult> GetSensorConfigurationAsync()
+        {
+            var result = await central.GetSensorConfigurationAsync();
+            return Ok(result);
+        }
     }
 }
