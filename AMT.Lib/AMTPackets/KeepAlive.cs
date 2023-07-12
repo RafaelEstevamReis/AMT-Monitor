@@ -11,6 +11,11 @@ internal class KeepAlive : DataPacket
     {
         base.Unpack(receivedBytes);
 
+        if(receivedBytes.Length == 8)
+        {
+            return;
+        }
+
         Result = Data[0] == 0xF0
               && Data[1] == 0xFE;
     }
