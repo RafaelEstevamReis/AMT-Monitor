@@ -16,6 +16,7 @@ namespace Simple.AMT
         public ConnectionInfo ConnectionInfo { get; }
 
         private readonly TcpClient tcpClient;
+        public bool IsConnected => tcpClient?.Connected ?? false;
 
         public AMT8000(ConnectionInfo connectionInfo)
         {
