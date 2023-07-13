@@ -33,7 +33,7 @@ app.UseSwaggerUI();
 app.UseAuthorization();
 app.MapControllers();
 
-var log = app.Services.GetService<Serilog.ILogger>();
+var log = app.Services.GetService<ILogger>();
 log?.Information("[AMT] Connecting to {ip} with password {yesNo}",
                  central.ConnectionInfo.IP,
                  string.IsNullOrEmpty(central.ConnectionInfo.Password) ? "NO" : "YES");
