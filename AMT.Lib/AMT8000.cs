@@ -145,7 +145,7 @@ namespace Simple.AMT
         }
         public static async Task<byte[]> receiveBytesAsync(NetworkStream stream)
         {
-            byte[] bytes = new byte[512];
+            byte[] bytes = new byte[4096];
 
             // read 8 (header)
             int hdrLen = await stream.ReadAsync(bytes, 0, 8);
