@@ -33,6 +33,9 @@ namespace AMT.API.Workers
 
         private async void executaKeepAliveAsync(object? state)
         {
+            var lastCommDiff = DateTime.UtcNow - central.LastCommunication;
+            if (lastCommDiff.TotalSeconds < 15) return; // skip
+
             if (!central.IsConnected) await central.ConnectAsync();
             await central.KeepAliveAsync();
         }

@@ -14,6 +14,7 @@ namespace Simple.AMT
     public class AMT8000
     {
         public ConnectionInfo ConnectionInfo { get; }
+        public DateTime LastCommunication { get; private set; }
 
         private readonly TcpClient tcpClient;
         public bool IsConnected => tcpClient?.Connected ?? false;
@@ -116,7 +117,10 @@ namespace Simple.AMT
         }
 
         private async Task<T> sendReceiveAsync<T>(DataPacket toSend) where T : DataPacket
-            => await sendReceiveAsync<T>(tcpClient.GetStream(), toSend);
+        {
+            LastCommunication = DateTime.UtcNow;
+            return await sendReceiveAsync<T>(tcpClient.GetStream(), toSend);
+        }
         private static async Task<T> sendReceiveAsync<T>(NetworkStream stream, DataPacket toSend)
             where T : DataPacket
         {
