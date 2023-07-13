@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Simple.AMT;
 using System;
 using System.Threading;
@@ -23,7 +22,7 @@ namespace AMT.API.Workers
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            _timer = new Timer(executaKeepAliveAsync, null, TimeSpan.FromSeconds(15), TimeSpan.FromMinutes(15));
+            _timer = new Timer(executaKeepAliveAsync, null, TimeSpan.FromSeconds(15), TimeSpan.FromMinutes(1));
             return Task.CompletedTask;
         }
         public Task StopAsync(CancellationToken cancellationToken)
