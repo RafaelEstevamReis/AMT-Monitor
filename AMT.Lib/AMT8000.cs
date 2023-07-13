@@ -156,7 +156,7 @@ namespace Simple.AMT
             // unpack len
             int dataExpenctedLen = bytes[4] * 256 + bytes[5] - 2;
             // read len
-            int dataLen = await stream.ReadAsync(bytes, 8, dataExpenctedLen);
+            int dataLen = await stream.ReadAsync(bytes, 8, Math.Min(bytes.Length, dataExpenctedLen));
 
             int totalLen = 8 + dataLen;
             // read checksum
