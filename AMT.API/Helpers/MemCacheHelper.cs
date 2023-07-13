@@ -38,7 +38,7 @@ namespace AMT.API.Helpers
                 "Central.OpenedZones",
                 async cacheEntry =>
                 {
-                    cacheEntry.AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(30);
+                    cacheEntry.AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(60);
                     return await central.GetOpenedZonesAsync();
                 });
         }

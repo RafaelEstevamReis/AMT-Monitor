@@ -25,7 +25,7 @@ namespace AMT.API.Workers
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            _timer = new Timer(executaKeepAliveAsync, null, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(10));
+            _timer = new Timer(executaKeepAliveAsync, null, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(20));
             return Task.CompletedTask;
         }
         public Task StopAsync(CancellationToken cancellationToken)
