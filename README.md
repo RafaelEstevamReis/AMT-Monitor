@@ -147,6 +147,13 @@ And may need to provide
 
 # WebApp / API Usage options
 
+To install the API on a Linux machine or in a proxmox LXC:
+1. Create the VM/Container, and install docker
+2. Open the VM console
+3. Paste this line to download the script and run
+```curl -sSL -o install.sh https://raw.githubusercontent.com/RafaelEstevamReis/AMT-Monitor/main/AMT.API/install.sh && bash install.sh```
+4. Fill the Central IP and MAC
+5. After the complete, go to `http://<IP>/swagger/index.html`
 
 
 # Contributing
