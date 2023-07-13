@@ -34,6 +34,18 @@ namespace AMT.API.Controllers
             };
         }
         [HttpGet]
+        [Route("GetCentralDisarmedStatus")]
+        public async Task<RestSensorArmedModel> GetCentralDisarmedStatusAsync()
+        {
+            var cachedValue = await Helpers.MemCacheHelper.getCentralInformation(memoryCache, central);
+
+            return new RestSensorArmedModel
+            {
+                Armed = cachedValue.Status == 0 ? "true" : "false",
+            };
+        }
+
+        [HttpGet]
         [Route("GetCentralAllClosedStatus")]
         public async Task<RestSensorValueModel> GetCentralAllClosedStatusAsync()
         {
