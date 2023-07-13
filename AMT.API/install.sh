@@ -23,7 +23,7 @@ read -s -p "Enter Central Password: " pwd
 echo ""
 
 # Run Docker container with IP and PWD as environment variables
-docker run -d --name amt-api -p 80:80 -e ip="$ip" -e pwd="$pwd" amt-api-image
+docker run -d --restart unless-stopped --name amt-api -p 80:80 -e ip="$ip" -e pwd="$pwd" amt-api-image
 
 echo "Installation complete"
 
