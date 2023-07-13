@@ -51,7 +51,7 @@ namespace AMT.API.Controllers
         {
             if (zoneId < 1 || zoneId > 64) throw new ArgumentOutOfRangeException("zone Id must be between 1 and 64");
 
-            int zoneIndex = zoneId--;
+            int zoneIndex = zoneId - 1;
             // use memoryCache
             var cachedNames = await Helpers.MemCacheHelper.getCachedZoneNames(memoryCache, central);
             var cachedValue = await Helpers.MemCacheHelper.getCachedZoneStatus(memoryCache, central, forceUpdate: false);
