@@ -35,13 +35,13 @@ namespace AMT.API.Controllers
         }
         [HttpGet]
         [Route("GetCentralDisarmedStatus")]
-        public async Task<RestSensorArmedModel> GetCentralDisarmedStatusAsync()
+        public async Task<RestSensorValueModel> GetCentralDisarmedStatusAsync()
         {
             var cachedValue = await Helpers.MemCacheHelper.getCentralInformation(memoryCache, central);
 
-            return new RestSensorArmedModel
+            return new RestSensorValueModel
             {
-                Armed = cachedValue.Status == 0 ? "true" : "false",
+                Value = cachedValue.Status == 0 ? "true" : "false",
             };
         }
 
