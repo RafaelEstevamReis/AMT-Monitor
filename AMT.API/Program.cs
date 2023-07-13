@@ -15,6 +15,7 @@ builder.Services.AddMemoryCache();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddHostedService<AMT.API.Workers.CentralKeepAlive>();
+builder.Services.AddHostedService<AMT.API.Workers.CentralSensorsCacheUpdate>();
 builder.Services.AddSwaggerGen();
 
 var central = new Simple.AMT.AMT8000(new Simple.AMT.AMTModels.ConnectionInfo

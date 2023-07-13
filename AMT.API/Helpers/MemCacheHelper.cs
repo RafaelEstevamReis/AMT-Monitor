@@ -27,13 +27,18 @@ namespace AMT.API.Helpers
                     return await central.GetZonesNamesAsync();
                 });
         }
-        internal static async Task<bool[]> getCachedZoneStatus(IMemoryCache memoryCache, AMT8000 central)
+        internal static async Task<bool[]> getCachedZoneStatus(IMemoryCache memoryCache, AMT8000 central, bool forceUpdate)
         {
+            if (forceUpdate)
+            {
+                memoryCache.Remove("Central.OpenedZones");
+            }
+
             return await memoryCache.GetOrCreate(
-                $"Central.OpenedZones",
+                "Central.OpenedZones",
                 async cacheEntry =>
                 {
-                    cacheEntry.AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(15);
+                    cacheEntry.AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(30);
                     return await central.GetOpenedZonesAsync();
                 });
         }

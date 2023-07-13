@@ -54,7 +54,7 @@ namespace AMT.API.Controllers
             int zoneIndex = zoneId--;
             // use memoryCache
             var cachedNames = await Helpers.MemCacheHelper.getCachedZoneNames(memoryCache, central);
-            var cachedValue = await Helpers.MemCacheHelper.getCachedZoneStatus(memoryCache, central);
+            var cachedValue = await Helpers.MemCacheHelper.getCachedZoneStatus(memoryCache, central, forceUpdate: false);
 
             return new RestOpenSensorModel()
             {
