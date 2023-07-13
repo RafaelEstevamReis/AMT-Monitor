@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Sockets;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Simple.AMT
@@ -116,15 +117,29 @@ namespace Simple.AMT
             return result;
         }
 
+        long busy = 0;
         private async Task<T> sendReceiveAsync<T>(DataPacket toSend) where T : DataPacket
         {
+            while (true)
+            {
+                if (Interlocked.Read(ref busy) == 0) break;
+                await Task.Delay(100);
+            }
+            Interlocked.Increment(ref busy);
+
             LastCommunication = DateTime.UtcNow;
-            return await sendReceiveAsync<T>(tcpClient.GetStream(), toSend);
+            var result = await sendReceiveAsync<T>(tcpClient.GetStream(), toSend);
+
+            Interlocked.Exchange(ref  busy, 0);
+            return result;
         }
         private static async Task<T> sendReceiveAsync<T>(NetworkStream stream, DataPacket toSend)
             where T : DataPacket
         {
             await sendPacketAsync(stream, toSend);
+            // Wait first bytes to arrive
+            while (!stream.DataAvailable) await Task.Delay(50);
+
             var bytesReceived = await receiveBytesAsync(stream);
             if (bytesReceived.Length == 9 && bytesReceived[8] == 31)
             {
@@ -150,13 +165,15 @@ namespace Simple.AMT
         public static async Task<byte[]> receiveBytesAsync(NetworkStream stream)
         {
             byte[] bytes = new byte[4096];
-
             // read 8 (header)
+            await Task.Delay(50); // wait for packet completion
             int hdrLen = await stream.ReadAsync(bytes, 0, 8);
             // unpack len
             int dataExpenctedLen = bytes[4] * 256 + bytes[5] - 2;
+            if (dataExpenctedLen <= 0) dataExpenctedLen = 0;
             // read len
-            int dataLen = await stream.ReadAsync(bytes, 8, Math.Min(bytes.Length, dataExpenctedLen));
+            int dataToRead = Math.Min(bytes.Length - 8, dataExpenctedLen);
+            int dataLen = await stream.ReadAsync(bytes, 8, dataToRead);
 
             int totalLen = 8 + dataLen;
             // read checksum
