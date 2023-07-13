@@ -120,7 +120,7 @@ namespace Simple.AMT
         long busy = 0;
         private async Task<T> sendReceiveAsync<T>(DataPacket toSend) where T : DataPacket
         {
-            while (true)
+            for (int i = 0; i < 10 * 2; i++) // max 2s
             {
                 if (Interlocked.Read(ref busy) == 0) break;
                 await Task.Delay(100);
@@ -130,7 +130,7 @@ namespace Simple.AMT
             LastCommunication = DateTime.UtcNow;
             var result = await sendReceiveAsync<T>(tcpClient.GetStream(), toSend);
 
-            Interlocked.Exchange(ref  busy, 0);
+            Interlocked.Exchange(ref  busy, 0); // reset
             return result;
         }
         private static async Task<T> sendReceiveAsync<T>(NetworkStream stream, DataPacket toSend)
