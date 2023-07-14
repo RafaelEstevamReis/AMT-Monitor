@@ -22,7 +22,7 @@ namespace AMT.API.Workers
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            _timer = new Timer(executaKeepAliveAsync, null, TimeSpan.FromSeconds(15), TimeSpan.FromMinutes(1));
+            //_timer = new Timer(executaKeepAliveAsync, null, TimeSpan.FromSeconds(15), TimeSpan.FromMinutes(1));
             return Task.CompletedTask;
         }
         public Task StopAsync(CancellationToken cancellationToken)
@@ -31,13 +31,13 @@ namespace AMT.API.Workers
             return Task.CompletedTask;
         }
 
-        private async void executaKeepAliveAsync(object? state)
-        {
-            var lastCommDiff = DateTime.UtcNow - central.LastCommunication;
-            if (lastCommDiff.TotalSeconds < 30) return; // skip
+        //private async void executaKeepAliveAsync(object? state)
+        //{
+        //    var lastCommDiff = DateTime.UtcNow - central.LastCommunication;
+        //    if (lastCommDiff.TotalSeconds < 30) return; // skip
 
-            if (!central.IsConnected) await central.ConnectAsync();
-            await central.KeepAliveAsync();
-        }
+        //    if (!central.IsConnected) await central.ConnectAsync();
+        //    await central.KeepAliveAsync();
+        //}
     }
 }

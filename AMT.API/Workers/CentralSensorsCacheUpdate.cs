@@ -25,7 +25,9 @@ namespace AMT.API.Workers
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            _timer = new Timer(executaKeepAliveAsync, null, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(20));
+            _timer = new Timer(executaKeepAliveAsync, null, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(10));
+            lastUpdateCentral = DateTime.Now.AddHours(-1);
+            lastKeepAlive = DateTime.Now;
             return Task.CompletedTask;
         }
         public Task StopAsync(CancellationToken cancellationToken)
@@ -34,9 +36,31 @@ namespace AMT.API.Workers
             return Task.CompletedTask;
         }
 
+        public DateTime lastUpdateCentral;
+        public DateTime lastKeepAlive;
+        bool updating = false;
+
         private async void executaKeepAliveAsync(object? state)
         {
-            await Helpers.MemCacheHelper.getCachedZoneStatus(memoryCache, central, forceUpdate: true);
+            if (updating) return;
+            updating = true;
+            // update Zones
+            await Helpers.MemCacheHelper.setCachedZoneStatus(memoryCache, central);
+            await Task.Delay(50);
+
+            if ((DateTime.Now - lastUpdateCentral).TotalSeconds > 60)
+            {
+                await Helpers.MemCacheHelper.setCentralInformation(memoryCache, central);
+                lastUpdateCentral = DateTime.Now;
+                await Task.Delay(50);
+            }
+
+            if ((DateTime.Now - lastKeepAlive).TotalSeconds > 60)
+            {
+                await central.KeepAliveAsync();
+                lastUpdateCentral = DateTime.Now;
+            }
+            updating = false;
         }
     }
 }

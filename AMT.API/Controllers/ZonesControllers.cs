@@ -50,13 +50,13 @@ namespace AMT.API.Controllers
 
         [HttpGet]
         [Route("GetZoneOpenStatus/{zoneId}")]
-        public async Task<bool> GetZoneOpenStatus(int zoneId)
+        public bool GetZoneOpenStatus(int zoneId)
         {
             if (zoneId < 1 || zoneId > 64) throw new ArgumentOutOfRangeException("zone Id must be between 1 and 64");
 
             int zoneIndex = zoneId--;
             // use memoryCache
-            var cachedValue = await Helpers.MemCacheHelper.getCachedZoneStatus(memoryCache, central, forceUpdate: false);
+            var cachedValue = Helpers.MemCacheHelper.getCachedZoneStatus(memoryCache);
 
             return cachedValue[zoneIndex];
         }

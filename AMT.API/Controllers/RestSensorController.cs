@@ -24,9 +24,9 @@ namespace AMT.API.Controllers
 
         [HttpGet]
         [Route("GetCentralArmedStatus")]
-        public async Task<RestSensorArmedModel> GetCentralArmedStatusAsync()
+        public RestSensorArmedModel GetCentralArmedStatusAsync()
         {
-            var cachedValue = await Helpers.MemCacheHelper.getCentralInformation(memoryCache, central);
+            var cachedValue = Helpers.MemCacheHelper.getCentralInformation(memoryCache);
 
             return new RestSensorArmedModel
             {
@@ -35,9 +35,9 @@ namespace AMT.API.Controllers
         }
         [HttpGet]
         [Route("GetCentralDisarmedStatus")]
-        public async Task<RestSensorValueModel> GetCentralDisarmedStatusAsync()
+        public RestSensorValueModel GetCentralDisarmedStatusAsync()
         {
-            var cachedValue = await Helpers.MemCacheHelper.getCentralInformation(memoryCache, central);
+            var cachedValue = Helpers.MemCacheHelper.getCentralInformation(memoryCache);
 
             return new RestSensorValueModel
             {
@@ -47,9 +47,9 @@ namespace AMT.API.Controllers
 
         [HttpGet]
         [Route("GetCentralAllClosedStatus")]
-        public async Task<RestSensorValueModel> GetCentralAllClosedStatusAsync()
+        public RestSensorValueModel GetCentralAllClosedStatusAsync()
         {
-            var cachedValue = await Helpers.MemCacheHelper.getCentralInformation(memoryCache, central);
+            var cachedValue = Helpers.MemCacheHelper.getCentralInformation(memoryCache);
 
             return new RestSensorValueModel
             {
@@ -59,14 +59,14 @@ namespace AMT.API.Controllers
 
         [HttpGet]
         [Route("GetSensorStatus/{zoneId}")]
-        public async Task<RestOpenSensorModel> GetSensorStatusAsync(int zoneId)
+        public RestOpenSensorModel GetSensorStatusAsync(int zoneId)
         {
             if (zoneId < 1 || zoneId > 64) throw new ArgumentOutOfRangeException("zone Id must be between 1 and 64");
 
             int zoneIndex = zoneId - 1;
             // use memoryCache
-            var cachedNames = await Helpers.MemCacheHelper.getCachedZoneNames(memoryCache, central);
-            var cachedValue = await Helpers.MemCacheHelper.getCachedZoneStatus(memoryCache, central, forceUpdate: false);
+            var cachedNames = Helpers.MemCacheHelper.getCachedZoneNames(memoryCache);
+            var cachedValue = Helpers.MemCacheHelper.getCachedZoneStatus(memoryCache);
 
             return new RestOpenSensorModel()
             {
