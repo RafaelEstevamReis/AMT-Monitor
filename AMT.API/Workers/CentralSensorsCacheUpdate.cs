@@ -26,6 +26,7 @@ namespace AMT.API.Workers
         public Task StartAsync(CancellationToken cancellationToken)
         {
             _timer = new Timer(executaKeepAliveAsync, null, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(10));
+            lastUpdateNames = DateTime.Now.AddHours(-10);
             lastUpdateCentral = DateTime.Now.AddHours(-1);
             lastKeepAlive = DateTime.Now;
             return Task.CompletedTask;
@@ -36,6 +37,7 @@ namespace AMT.API.Workers
             return Task.CompletedTask;
         }
 
+        public DateTime lastUpdateNames;
         public DateTime lastUpdateCentral;
         public DateTime lastKeepAlive;
         bool updating = false;
@@ -48,6 +50,12 @@ namespace AMT.API.Workers
             await Helpers.MemCacheHelper.setCachedZoneStatus(memoryCache, central);
             await Task.Delay(50);
 
+            if ((DateTime.Now - lastUpdateNames).TotalMinutes > 60)
+            {
+                await Helpers.MemCacheHelper.setCachedZoneNames(memoryCache, central);
+                lastUpdateNames = DateTime.Now;
+                await Task.Delay(50);
+            }
             if ((DateTime.Now - lastUpdateCentral).TotalSeconds > 60)
             {
                 await Helpers.MemCacheHelper.setCentralInformation(memoryCache, central);
