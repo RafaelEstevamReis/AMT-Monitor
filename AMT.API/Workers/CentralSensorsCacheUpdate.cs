@@ -4,6 +4,7 @@ using System;
 using System.Threading.Tasks;
 using System.Threading;
 using Microsoft.Extensions.Caching.Memory;
+using Serilog;
 
 namespace AMT.API.Workers
 {
@@ -11,11 +12,13 @@ namespace AMT.API.Workers
     {
         private readonly AMT8000 central;
         private readonly IMemoryCache memoryCache;
+        private readonly ILogger log;
         private Timer? _timer;
-        public CentralSensorsCacheUpdate(AMT8000 central, IMemoryCache memoryCache)
+        public CentralSensorsCacheUpdate(AMT8000 central, IMemoryCache memoryCache, ILogger log)
         {
             this.central = central;
             this.memoryCache = memoryCache;
+            this.log = log;
         }
 
         public void Dispose()
@@ -25,10 +28,11 @@ namespace AMT.API.Workers
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            _timer = new Timer(executaKeepAliveAsync, null, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(10));
+            _timer = new Timer(executaSensorUpdateAsync, null, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(10));
             lastUpdateNames = DateTime.Now.AddHours(-10);
             lastUpdateCentral = DateTime.Now.AddHours(-1);
             lastKeepAlive = DateTime.Now;
+            log.Information("Update task start");
             return Task.CompletedTask;
         }
         public Task StopAsync(CancellationToken cancellationToken)
@@ -42,32 +46,54 @@ namespace AMT.API.Workers
         public DateTime lastKeepAlive;
         bool updating = false;
 
-        private async void executaKeepAliveAsync(object? state)
+        private async void executaSensorUpdateAsync(object? state)
         {
             if (updating) return;
+
+            if (!central.IsConnected)
+            {
+                log.Error("[SensorUpdate] Central disconnected!");
+                await central.ConnectAsync(); // reconnect
+                log.Information("[SensorUpdate] Reconnected");
+            }
+
             updating = true;
             // update Zones
-            await Helpers.MemCacheHelper.setCachedZoneStatus(memoryCache, central);
-            await Task.Delay(50);
-
-            if ((DateTime.Now - lastUpdateNames).TotalMinutes > 60)
+            try
             {
-                await Helpers.MemCacheHelper.setCachedZoneNames(memoryCache, central);
-                lastUpdateNames = DateTime.Now;
+                await Helpers.MemCacheHelper.setCachedZoneStatus(memoryCache, central);
+                log.Information("[SensorUpdate] Zone Update");
                 await Task.Delay(50);
+
+                if ((DateTime.Now - lastUpdateNames).TotalMinutes > 60)
+                {
+                    await Helpers.MemCacheHelper.setCachedZoneNames(memoryCache, central);
+                    log.Information("[SensorUpdate] Names Update");
+                    lastUpdateNames = DateTime.Now;
+                    await Task.Delay(50);
+                }
+
+                if ((DateTime.Now - lastUpdateCentral).TotalSeconds > 60)
+                {
+                    await Helpers.MemCacheHelper.setCentralInformation(memoryCache, central);
+                    log.Information("[SensorUpdate] Central Update");
+                    lastUpdateCentral = DateTime.Now;
+                    await Task.Delay(50);
+                }
+
+                if ((DateTime.Now - lastKeepAlive).TotalSeconds > 60)
+                {
+                    await central.KeepAliveAsync();
+                    log.Information("[SensorUpdate] KeepAlive");
+                    lastKeepAlive = DateTime.Now;
+                }
             }
-            if ((DateTime.Now - lastUpdateCentral).TotalSeconds > 60)
+            catch(Exception ex)
             {
-                await Helpers.MemCacheHelper.setCentralInformation(memoryCache, central);
-                lastUpdateCentral = DateTime.Now;
-                await Task.Delay(50);
+                log.Error(ex, "executaSensorUpdateAsync:Err");
+                central.Disconnect();
             }
 
-            if ((DateTime.Now - lastKeepAlive).TotalSeconds > 60)
-            {
-                await central.KeepAliveAsync();
-                lastUpdateCentral = DateTime.Now;
-            }
             updating = false;
         }
     }
