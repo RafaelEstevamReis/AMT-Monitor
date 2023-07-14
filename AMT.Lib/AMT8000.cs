@@ -38,6 +38,10 @@ namespace Simple.AMT
 
             return true;
         }
+        public void Disconnect()
+        {
+            tcpClient.Close();
+        }
         public async Task<bool> KeepAliveAsync()
         {
             var ka = await sendReceiveAsync<KeepAlive>(KeepAlive.Request());
@@ -170,7 +174,7 @@ namespace Simple.AMT
             int hdrLen = await stream.ReadAsync(bytes, 0, 8);
             // unpack len
             int dataExpenctedLen = bytes[4] * 256 + bytes[5] - 2;
-            if (dataExpenctedLen <= 0) dataExpenctedLen = 0;
+            if (dataExpenctedLen < 0) dataExpenctedLen = 0;
             // read len
             int dataToRead = Math.Min(bytes.Length - 8, dataExpenctedLen);
             int dataLen = await stream.ReadAsync(bytes, 8, dataToRead);
