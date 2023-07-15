@@ -154,7 +154,7 @@ namespace Simple.AMT
             int limit = 0;
             while (!stream.DataAvailable)
             {
-                await Task.Delay(50);
+                await Task.Delay(100);
                 if(limit++ > 10) throw new TimeoutException("Central did not respond");
             }
 
