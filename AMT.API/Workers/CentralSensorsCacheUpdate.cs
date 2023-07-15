@@ -73,14 +73,13 @@ namespace AMT.API.Workers
             {
                 await Helpers.MemCacheHelper.setCachedZoneStatus(memoryCache, central);
                 log.Information("[SensorUpdate] Zone Update");
-                await Task.Delay(50);
 
                 if ((DateTime.Now - lastUpdateNames).TotalMinutes > 60)
                 {
                     await Helpers.MemCacheHelper.setCachedZoneNames(memoryCache, central);
                     log.Information("[SensorUpdate] Names Update");
                     lastUpdateNames = DateTime.Now;
-                    await Task.Delay(200);
+                    return;
                 }
 
                 if ((DateTime.Now - lastUpdateCentral).TotalSeconds > 120)
@@ -88,7 +87,7 @@ namespace AMT.API.Workers
                     await Helpers.MemCacheHelper.setCentralInformation(memoryCache, central);
                     log.Information("[SensorUpdate] Central Update");
                     lastUpdateCentral = DateTime.Now;
-                    await Task.Delay(100);
+                    return;
                 }
 
                 if ((DateTime.Now - lastKeepAlive).TotalSeconds > 60)
@@ -96,15 +95,15 @@ namespace AMT.API.Workers
                     await central.KeepAliveAsync();
                     log.Information("[SensorUpdate] KeepAlive");
                     lastKeepAlive = DateTime.Now;
+                    return;
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 log.Error(ex, "executaSensorUpdateAsync:Err");
                 central.Disconnect();
             }
-
-            updating = false;
+            finally { updating = false; }
         }
     }
 }
