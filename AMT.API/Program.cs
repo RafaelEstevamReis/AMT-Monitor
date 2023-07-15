@@ -10,7 +10,7 @@ builder.Host.UseSerilog((context, configuration) =>
     //.MinimumLevel.Override("Microsoft", Serilog.Events.LogEventLevel.Warning)
     .MinimumLevel.Override("Microsoft.AspNetCore.Hosting", Serilog.Events.LogEventLevel.Warning)
     //.MinimumLevel.Override("Microsoft.AspNetCore.Infrastructure", Serilog.Events.LogEventLevel.Warning)
-    //.MinimumLevel.Override("Microsoft.AspNetCore.Routing", Serilog.Events.LogEventLevel.Warning)
+    .MinimumLevel.Override("Microsoft.AspNetCore.Routing", Serilog.Events.LogEventLevel.Warning)
     //.MinimumLevel.Override("Microsoft.AspNetCore.Mvc", Serilog.Events.LogEventLevel.Warning)
     .WriteTo.File("events.log", rollingInterval: RollingInterval.Day)
     .WriteTo.Console();
