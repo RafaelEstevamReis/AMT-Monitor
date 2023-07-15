@@ -26,14 +26,16 @@ namespace AMT.API.Workers
             _timer?.Dispose();
         }
 
-        public Task StartAsync(CancellationToken cancellationToken)
+        public async Task StartAsync(CancellationToken cancellationToken)
         {
-            _timer = new Timer(executaSensorUpdateAsync, null, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(10));
             lastUpdateNames = DateTime.Now.AddHours(-10);
             lastUpdateCentral = DateTime.Now.AddHours(-1);
             lastKeepAlive = DateTime.Now;
             log.Information("Update task start");
-            return Task.CompletedTask;
+            executaSensorUpdateAsync(null);
+
+            _timer = new Timer(executaSensorUpdateAsync, null, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(10));
+            await Task.CompletedTask;
         }
         public Task StopAsync(CancellationToken cancellationToken)
         {
