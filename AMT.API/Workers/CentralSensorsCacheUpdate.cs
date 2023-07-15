@@ -34,7 +34,7 @@ namespace AMT.API.Workers
             log.Information("Update task start");
             executaSensorUpdateAsync(null);
 
-            _timer = new Timer(executaSensorUpdateAsync, null, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(10));
+            _timer = new Timer(executaSensorUpdateAsync, null, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(15));
             await Task.CompletedTask;
         }
         public Task StopAsync(CancellationToken cancellationToken)
@@ -83,7 +83,7 @@ namespace AMT.API.Workers
                     await Task.Delay(50);
                 }
 
-                if ((DateTime.Now - lastUpdateCentral).TotalSeconds > 60)
+                if ((DateTime.Now - lastUpdateCentral).TotalSeconds > 120)
                 {
                     await Helpers.MemCacheHelper.setCentralInformation(memoryCache, central);
                     log.Information("[SensorUpdate] Central Update");
