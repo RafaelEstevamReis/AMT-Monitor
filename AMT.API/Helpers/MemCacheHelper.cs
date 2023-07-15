@@ -22,7 +22,7 @@ namespace AMT.API.Helpers
 
         internal static async Task setCachedZoneNames(IMemoryCache memoryCache, AMT8000 central)
         {
-            memoryCache.Set(CACHEKEY_CENTRAL_ZONESNAMES, await central.GetZonesNamesAsync(), TimeSpan.FromMinutes(5));
+            memoryCache.Set(CACHEKEY_CENTRAL_ZONESNAMES, await central.GetZonesNamesAsync(), TimeSpan.FromHours(5));
         }
         internal static Simple.AMT.AMTPackets.ItemNames.NameEntry[] getCachedZoneNames(IMemoryCache memoryCache)
         {
