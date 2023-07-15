@@ -80,7 +80,7 @@ namespace AMT.API.Workers
                     await Helpers.MemCacheHelper.setCachedZoneNames(memoryCache, central);
                     log.Information("[SensorUpdate] Names Update");
                     lastUpdateNames = DateTime.Now;
-                    await Task.Delay(50);
+                    await Task.Delay(200);
                 }
 
                 if ((DateTime.Now - lastUpdateCentral).TotalSeconds > 120)
@@ -88,7 +88,7 @@ namespace AMT.API.Workers
                     await Helpers.MemCacheHelper.setCentralInformation(memoryCache, central);
                     log.Information("[SensorUpdate] Central Update");
                     lastUpdateCentral = DateTime.Now;
-                    await Task.Delay(50);
+                    await Task.Delay(100);
                 }
 
                 if ((DateTime.Now - lastKeepAlive).TotalSeconds > 60)
