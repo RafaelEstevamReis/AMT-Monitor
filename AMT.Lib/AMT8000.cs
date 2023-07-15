@@ -140,9 +140,23 @@ namespace Simple.AMT
         private static async Task<T> sendReceiveAsync<T>(NetworkStream stream, DataPacket toSend)
             where T : DataPacket
         {
+            while (stream.DataAvailable)
+            {
+                // empty previous bytes
+                var oldBytes = await receiveBytesAsync(stream);
+                oldBytes = oldBytes;
+            }
+
             await sendPacketAsync(stream, toSend);
             // Wait first bytes to arrive
-            while (!stream.DataAvailable) await Task.Delay(50);
+            await Task.Delay(50);
+
+            int limit = 0;
+            while (!stream.DataAvailable)
+            {
+                await Task.Delay(50);
+                if(limit++ > 10) throw new TimeoutException("Central did not respond");
+            }
 
             var bytesReceived = await receiveBytesAsync(stream);
             if (bytesReceived.Length == 9 && bytesReceived[8] == 31)
