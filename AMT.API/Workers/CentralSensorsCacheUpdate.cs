@@ -50,7 +50,15 @@ namespace AMT.API.Workers
 
         private async void executaSensorUpdateAsync(object? state)
         {
-            if (updating) return;
+            if (updating)
+            {
+                if((DateTime.Now - lastUpdateCentral).TotalMinutes > 5)
+                {
+                    log.Error("[SensorUpdate] Halt Detection forced a disconnection!");
+                    central.Disconnect();
+                }
+                return;
+            }
 
             if (!central.IsConnected)
             {
