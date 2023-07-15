@@ -17,17 +17,17 @@ namespace Simple.AMT
         public ConnectionInfo ConnectionInfo { get; }
         public DateTime LastCommunication { get; private set; }
 
-        private readonly TcpClient tcpClient;
+        private TcpClient tcpClient;
         public bool IsConnected => tcpClient?.Connected ?? false;
 
         public AMT8000(ConnectionInfo connectionInfo)
         {
             ConnectionInfo = connectionInfo;
-            tcpClient = new TcpClient();
         }
 
         public async Task<bool> ConnectAsync()
         {
+            tcpClient = new TcpClient();
             await tcpClient.ConnectAsync(ConnectionInfo.IP, ConnectionInfo.Port);
             if (!tcpClient.Connected) throw new InvalidOperationException("Not connected");
             var stream = tcpClient.GetStream();
